@@ -12,7 +12,7 @@ type ProductModalProps = {
     business: string[];
     regions: string[];
   };
-  editMode: boolean; // Indicates whether the modal is in edit mode
+  editMode: boolean; 
 };
 
 export function ProductModal({

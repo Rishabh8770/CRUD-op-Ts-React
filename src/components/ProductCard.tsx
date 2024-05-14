@@ -13,7 +13,7 @@ type ProductListProps = {
   };
 };
 
-export function ProductList({
+export function ProductCard({
   id,
   name,
   business,
@@ -23,14 +23,14 @@ export function ProductList({
 }: ProductListProps) {
   const cardStyle = customStyles?.cardStyle || {};
   const cardBodyStyle = customStyles?.cardBodyStyle || {};
-  
+
   const cardContent = (
     <Card
       style={{
         ...cardStyle,
         width: "20rem",
         boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-        height:"10rem"
+        height: "10rem",
       }}
     >
       <Card.Body style={{ ...cardBodyStyle }}>

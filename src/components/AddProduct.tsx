@@ -3,18 +3,15 @@ import { Button } from "react-bootstrap";
 import { v4 as uuidv4 } from "uuid";
 import { ProductModal } from "./ProductModal";
 import { productData } from "../data/productData";
+import { ProductProps } from "../types/types";
+import { useProductContext } from "../Context/ProductPageContext";
 
-type NewProductProps = {
-  id: string;
-  name: string;
-  business: string[];
-  regions: string[];
-};
+type NewProductProps = ProductProps;
 
 type ButtonProps = {
-  title: string
+  title: string;
   onSubmit: (newProduct: NewProductProps) => void;
-  product?: NewProductProps
+  product?: NewProductProps;
 };
 
 export function AddProduct({ onSubmit, title, product }: ButtonProps) {
@@ -22,10 +19,11 @@ export function AddProduct({ onSubmit, title, product }: ButtonProps) {
   const [newProduct, setNewProduct] = useState<NewProductProps>({
     id: product?.id || uuidv4(),
     name: product?.name || "",
-    business:product?.business || [],
+    business: product?.business || [],
     regions: product?.regions || [],
   });
 
+  const { addProduct } = useProductContext();
   const handleShow = () => setShowModal(true);
   const handleClose = () => setShowModal(false);
 
@@ -40,21 +38,22 @@ export function AddProduct({ onSubmit, title, product }: ButtonProps) {
     } else {
       setNewProduct({
         ...newProduct,
-        [name]: value.split(","),
+        [name]: value,
       });
     }
   };
 
   const handleSubmit = () => {
     onSubmit(newProduct);
-    productData.push(newProduct)
+    addProduct(newProduct);
+    productData.push(newProduct);
     handleClose();
   };
 
   return (
     <>
-      <div className="container-fluid">
-        <Button variant="primary" onClick={handleShow} >
+      <div className="mx-3">
+        <Button variant="outline-primary" onClick={handleShow}>
           {title}
         </Button>
       </div>

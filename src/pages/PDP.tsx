@@ -1,23 +1,19 @@
 import { useState } from "react";
 import { ProductDisplay } from "../components/EditProduct";
+import { ProductProps } from "../types/types";
 
-type ProductProps = {
-  id: string;
-  name: string;
-  business: string[];
-  regions: string[];
-};
+type Product = ProductProps;
 
 type ProductDisplayAndEditProps = {
-  onSubmit: (editedProduct: ProductProps) => void;
+  onSubmit: (editedProduct: Product) => void;
 };
 
 export function ProductDisplayAndEdit({
   onSubmit
 }: ProductDisplayAndEditProps) {
-  const [productData, setProductData] = useState<ProductProps[]>([]);
+  const [productData, setProductData] = useState<Product[]>([]);
 
-  const handleSubmit = (editedProduct: ProductProps) => {
+  const handleSubmit = (editedProduct: Product) => {
     const updateProductData = productData.map((product) => {
       if (product.id === editedProduct.id) {
         console.log("submit", editedProduct);

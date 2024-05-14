@@ -1,16 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { productData } from "../data/productData";
-import { ProductList } from "../components/ProductCard";
+import { ProductCard } from "../components/ProductCard";
 import { ProductModal } from "../components/ProductModal";
 import { Button } from "react-bootstrap";
+import { ProductProps } from "../types/types";
 
-type Product = {
-  id: string;
-  name: string;
-  business: string[];
-  regions: string[];
-};
+type Product = ProductProps;
 
 type ButtonProps = {
   onSubmit: (editedProduct: Product) => void;
@@ -31,7 +27,7 @@ export function ProductDisplay({ onSubmit, title }: ButtonProps) {
 
   useEffect(()=> {
     if(!product){
-        const foundProduct = productData.find((p)=> p.id === id);
+        const foundProduct = productData.find((prod)=> prod.id === id);
         if(foundProduct){
             setProduct(foundProduct)
             localStorage.setItem("product_"+id, JSON.stringify(foundProduct))
@@ -43,18 +39,19 @@ export function ProductDisplay({ onSubmit, title }: ButtonProps) {
   const handleCloseModal = () => setShowModal(false);
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    field: keyof Product
-  ) => {
-    const { name, value } = e.target;
-    if (editedProduct) {
-      setEditedProduct({
-        ...editedProduct,
-        [field]:
-          name === "name" ? value : value.split(",").map((item) => item.trim()),
-      });
-    }
-  };
+  e: React.ChangeEvent<HTMLInputElement>
+) => {
+  const { name, value } = e.target;
+  if (editedProduct) {
+    setEditedProduct({
+      ...editedProduct,
+      [name]:
+        name === "name"
+          ? value 
+          : value.split(",").map((item) => item.trim()),
+    });
+  }
+};
 
   const handleSubmit = () => {
     if (editedProduct) {
@@ -85,15 +82,15 @@ export function ProductDisplay({ onSubmit, title }: ButtonProps) {
           <ProductModal
             showModal={showModal}
             handleCloseModal={handleCloseModal}
-            handleInputChange={(e) => handleInputChange(e, "name")}
+            handleInputChange={handleInputChange}
             handleSubmit={handleSubmit}
             title="Edit Product"
             newProduct={
               editedProduct || { id: "", name: "", business: [], regions: [] }
             }
-            editMode={true} // Setting editMode to true for editing existing product
+            editMode={true} 
           />
-          <ProductList
+          <ProductCard
             id={product.id}
             name={product.name}
             business={product.business}
