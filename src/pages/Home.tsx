@@ -14,9 +14,14 @@ export function Home() {
   const { products, addProduct, deleteProduct } = useProductContext();
 
   const [searchProduct, setSearchProduct] = useState("");
-  const [sortOption, setSortOption] = useState<SortOptions>("--please select--");
-  const [selectBusinessOptions, setSelectBusinessOptions] = useState<Option[] | null>(null);
-  const [selectRegionOptions, setSelectRegionOptions] = useState<Option[] | null>(null);
+  const [sortOption, setSortOption] =
+    useState<SortOptions>("--please select--");
+  const [selectBusinessOptions, setSelectBusinessOptions] = useState<
+    Option[] | null
+  >(null);
+  const [selectRegionOptions, setSelectRegionOptions] = useState<
+    Option[] | null
+  >(null);
 
   const handleSelectBusinessFilterChange = (
     selectedOptions: Option[] | null
@@ -139,7 +144,12 @@ export function Home() {
         {sortedAndFilteredProducts.length > 0 ? (
           sortedAndFilteredProducts.map((product) => (
             <div key={product.id} style={{ margin: "10px" }}>
-              <ProductCard {...product} withLink deleteProduct={deleteProduct} isDelete/>
+              <ProductCard
+                {...product}
+                withLink
+                deleteProduct={deleteProduct}
+                isDelete
+              />
             </div>
           ))
         ) : (

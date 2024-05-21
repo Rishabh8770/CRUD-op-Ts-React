@@ -9,7 +9,7 @@ type ProductListProps = {
   regions: string[];
   withLink: boolean;
   deleteProduct: (id: string) => void;
-  isDelete: boolean
+  isDelete: boolean;
 };
 
 export function ProductCard({
@@ -21,7 +21,6 @@ export function ProductCard({
   isDelete = true,
   deleteProduct,
 }: ProductListProps) {
-
   const handleDelete = (e: React.MouseEvent) => {
     e.preventDefault();
     deleteProduct(id);
@@ -33,7 +32,6 @@ export function ProductCard({
         width: "17rem",
         boxShadow: "0 6px 6px rgba(0, 0, 0, 0.1)",
         height: "15rem",
-        transition: "transform 0.3s ease-in-out",
       }}
     >
       <Card.Body>
@@ -50,15 +48,17 @@ export function ProductCard({
             </Card.Text>
           </div>
         </div>
-        {isDelete && <Trash2
-          style={{
-            position: "absolute",
-            bottom: "10px",
-            right: "10px",
-            cursor: "pointer",
-          }}
-          onClick={handleDelete}
-        />}
+        {isDelete && (
+          <Trash2
+            style={{
+              position: "absolute",
+              bottom: "10px",
+              right: "10px",
+              cursor: "pointer",
+            }}
+            onClick={handleDelete}
+          />
+        )}
       </Card.Body>
     </Card>
   );

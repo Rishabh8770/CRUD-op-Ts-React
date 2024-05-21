@@ -27,7 +27,6 @@ export function ProductModal({
   handleBusinessChange,
   handleRegionsChange,
 }: ProductModalProps) {
-  
   const getUniqueOptions = (data: string[]): Option[] => {
     const uniqueOptions: Option[] = [];
     data.forEach((item) => {
@@ -102,4 +101,3 @@ export function ProductModal({
     </Modal>
   );
 }
-

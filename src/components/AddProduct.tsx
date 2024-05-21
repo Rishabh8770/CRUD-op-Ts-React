@@ -16,7 +16,7 @@ type ButtonProps = {
   product?: NewProductProps;
 };
 
-export function AddProduct({title}: ButtonProps) {
+export function AddProduct({ title }: ButtonProps) {
   const [showModal, setShowModal] = useState(false);
   const [newProduct, setNewProduct] = useState<NewProductProps>({
     id: uuidv4(),
@@ -64,7 +64,7 @@ export function AddProduct({title}: ButtonProps) {
       regions: [],
     });
     console.log("new data::::", productData);
-    
+
     handleClose();
   };
 

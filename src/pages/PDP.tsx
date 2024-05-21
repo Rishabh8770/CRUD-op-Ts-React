@@ -8,8 +8,8 @@ import { useParams } from "react-router-dom";
 type Product = ProductProps;
 
 export function ProductDisplayAndEdit() {
-  const { id } = useParams<{ id: string }>()
-  const {products, addProduct} = useProductContext();
+  const { id } = useParams<{ id: string }>();
+  const { products, addProduct } = useProductContext();
   const [product, setProduct] = useState<Product | undefined>(undefined);
 
   useEffect(() => {
@@ -17,10 +17,15 @@ export function ProductDisplayAndEdit() {
     setProduct(foundProduct);
   }, [products, id]);
 
-
   const handleSubmit = (editedProduct: Product) => {
-    addProduct(editedProduct)
-};
+    addProduct(editedProduct);
+  };
 
-  return <ProductDisplay onSubmit={handleSubmit} title="Edit Product" product={product}/>;
+  return (
+    <ProductDisplay
+      onSubmit={handleSubmit}
+      title="Edit Product"
+      product={product}
+    />
+  );
 }

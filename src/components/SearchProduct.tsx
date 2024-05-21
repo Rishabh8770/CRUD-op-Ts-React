@@ -29,7 +29,7 @@ export function SearchProduct({ placeholder, onSearch }: SearchProductProps) {
           width: "auto",
           padding: "5px",
           marginLeft: "5px",
-          border:'1px solid hsl(0, 0%, 80%)'
+          border: "1px solid hsl(0, 0%, 80%)",
         }}
       />
     </div>

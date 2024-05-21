@@ -1,17 +1,14 @@
 import React, { useState } from "react";
 
-export type SortOptions =
-  | "--please select--"
-  | "name"
-  | "business"
-  | "regions";
+export type SortOptions = "--please select--" | "name" | "business" | "regions";
 
 type SortProductProps = {
   onProductSort: (filter: SortOptions) => void;
 };
 
 export const SortProduct = ({ onProductSort }: SortProductProps) => {
-  const [sortOption, setSortOption] = useState<SortOptions>("--please select--");
+  const [sortOption, setSortOption] =
+    useState<SortOptions>("--please select--");
 
   const handleProductSort = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedSortOption = event.target.value as SortOptions;
@@ -28,7 +25,12 @@ export const SortProduct = ({ onProductSort }: SortProductProps) => {
         name="filter"
         value={sortOption}
         onChange={handleProductSort}
-        style={{ borderRadius: "5px", padding: "5px", width: "auto", border:'1px solid hsl(0, 0%, 80%)' }}
+        style={{
+          borderRadius: "5px",
+          padding: "5px",
+          width: "auto",
+          border: "1px solid hsl(0, 0%, 80%)",
+        }}
       >
         <option value="">-Please select-</option>
         <option value="name">Name</option>
