@@ -20,17 +20,8 @@ export const MultiSelectDropdown = ({
   onChange,
   value,
 }: MultiSelectDropdownProps) => {
-  // const [selectedOptions, setSelectedOptions] = useState<Option[] | null>(null);
-
   const handleSelectionChange = (newValue: MultiValue<Option>) => {
     onChange(newValue as Option[]);
-    /* if (newValue) {
-            setSelectedOptions(newValue as Option[]);
-            onChange(newValue as Option[]);
-        } else {
-            setSelectedOptions(null);
-            onChange(null);
-        } */
   };
 
   return (

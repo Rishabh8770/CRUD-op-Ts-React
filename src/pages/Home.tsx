@@ -101,7 +101,7 @@ export function Home() {
           <AddProduct onSubmit={addProduct} title="Add New Product" />
         </div>
         <SortProduct onProductSort={handleProductSort} />
-        <div className="d-flex align-items-center ml-4">
+        <div className="d-flex m-2 align-items-center">
           {" "}
           Filter By:
           <div
