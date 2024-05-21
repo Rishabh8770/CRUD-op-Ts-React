@@ -6,13 +6,14 @@ import { ProductModal } from "../components/ProductModal";
 import { Button } from "react-bootstrap";
 import { ProductProps } from "../types/types";
 import { Option } from "./MultiSelectDropdown";
+import { useProductContext } from "../Context/ProductPageContext";
 
 type Product = ProductProps;
 
 type ButtonProps = {
   onSubmit: (editedProduct: Product) => void;
   title: string;
-  product: Product | undefined
+  product: Product | undefined;
 };
 
 export function ProductDisplay({ onSubmit, title }: ButtonProps) {
@@ -22,8 +23,10 @@ export function ProductDisplay({ onSubmit, title }: ButtonProps) {
   });
 
   const [showModal, setShowModal] = useState(false);
-  const [editedProduct, setEditedProduct] = useState<Product | undefined>(product);
-
+  const [editedProduct, setEditedProduct] = useState<Product | undefined>(
+    product
+  );
+  const { deleteProduct } = useProductContext();
 
   useEffect(() => {
     const foundProduct = productData.find((prod) => prod.id === id);
@@ -71,7 +74,7 @@ export function ProductDisplay({ onSubmit, title }: ButtonProps) {
   const handleSubmit = () => {
     if (editedProduct) {
       onSubmit(editedProduct);
-      productData.push(editedProduct)
+      productData.push(editedProduct);
       setProduct(editedProduct);
       handleCloseModal();
     }
@@ -105,6 +108,8 @@ export function ProductDisplay({ onSubmit, title }: ButtonProps) {
             business={product.business}
             regions={product.regions}
             withLink={false}
+            isDelete={false}
+            deleteProduct={deleteProduct}
           />
           <div className="container-fluid">
             <Button className="" onClick={handleShowModal}>

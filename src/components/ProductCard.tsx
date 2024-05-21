@@ -1,7 +1,6 @@
-import { useState } from "react";
+import { Trash2 } from "lucide-react";
 import Card from "react-bootstrap/Card";
 import { Link } from "react-router-dom";
-
 
 type ProductListProps = {
   id: string;
@@ -9,6 +8,8 @@ type ProductListProps = {
   business: string[];
   regions: string[];
   withLink: boolean;
+  deleteProduct: (id: string) => void;
+  isDelete: boolean
 };
 
 export function ProductCard({
@@ -17,38 +18,47 @@ export function ProductCard({
   business,
   regions,
   withLink = true,
+  isDelete = true,
+  deleteProduct,
 }: ProductListProps) {
-  const [isHovered, setIsHovered] = useState(false);
 
-  const baseStyle = {
-    width: "17rem",
-    boxShadow: "0 6px 6px rgba(0, 0, 0, 0.1)",
-    height: "15rem",
-    transition: "transform 0.3s ease-in-out"
+  const handleDelete = (e: React.MouseEvent) => {
+    e.preventDefault();
+    deleteProduct(id);
   };
-
-  const hoverStyle = {
-    transform: "scale(1.05)"
-  };
-
-  const combinedStyle = isHovered && withLink ? { ...baseStyle, ...hoverStyle } : baseStyle;
 
   const cardContent = (
     <Card
-    style={combinedStyle}
-    onMouseEnter={() => setIsHovered(true)}
-    onMouseLeave={() => setIsHovered(false)}
+      style={{
+        width: "17rem",
+        boxShadow: "0 6px 6px rgba(0, 0, 0, 0.1)",
+        height: "15rem",
+        transition: "transform 0.3s ease-in-out",
+      }}
     >
       <Card.Body>
         <Card.Title>{name}</Card.Title>
         <div className="d-flex flex-column">
           <div className="my-4">
-            <Card.Text><strong>Business :</strong> {business.join(", ")}</Card.Text>
+            <Card.Text>
+              <strong>Business :</strong> {business.join(", ")}
+            </Card.Text>
           </div>
           <div>
-            <Card.Text><strong>Regions :</strong> {regions.join(", ")}</Card.Text>
+            <Card.Text>
+              <strong>Regions :</strong> {regions.join(", ")}
+            </Card.Text>
           </div>
         </div>
+        {isDelete && <Trash2
+          style={{
+            position: "absolute",
+            bottom: "10px",
+            right: "10px",
+            cursor: "pointer",
+          }}
+          onClick={handleDelete}
+        />}
       </Card.Body>
     </Card>
   );

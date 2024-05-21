@@ -2,7 +2,7 @@ import { useState } from "react";
 import { AddProduct } from "../components/AddProduct";
 import { ProductCard } from "../components/ProductCard";
 import { ProductProps } from "../types/types";
-import { Button } from "react-bootstrap";
+// import { Button } from "react-bootstrap";
 import { SortProduct, SortOptions } from "../components/SortProduct";
 import { useProductContext } from "../Context/ProductPageContext";
 import { SearchProduct } from "../components/SearchProduct";
@@ -139,14 +139,7 @@ export function Home() {
         {sortedAndFilteredProducts.length > 0 ? (
           sortedAndFilteredProducts.map((product) => (
             <div key={product.id} style={{ margin: "10px" }}>
-              <ProductCard {...product} withLink />
-              <Button
-                style={{ marginLeft: "1rem" }}
-                variant="outline-danger"
-                onClick={() => deleteProduct(product.id)}
-              >
-                Delete
-              </Button>
+              <ProductCard {...product} withLink deleteProduct={deleteProduct} isDelete/>
             </div>
           ))
         ) : (
