@@ -1,5 +1,7 @@
+import { useState } from "react";
 import Card from "react-bootstrap/Card";
 import { Link } from "react-router-dom";
+
 
 type ProductListProps = {
   id: string;
@@ -7,10 +9,6 @@ type ProductListProps = {
   business: string[];
   regions: string[];
   withLink: boolean;
-  customStyles?: {
-    cardStyle: React.CSSProperties;
-    cardBodyStyle: React.CSSProperties;
-  };
 };
 
 export function ProductCard({
@@ -19,30 +17,44 @@ export function ProductCard({
   business,
   regions,
   withLink = true,
-  customStyles,
 }: ProductListProps) {
-  const cardStyle = customStyles?.cardStyle || {};
-  const cardBodyStyle = customStyles?.cardBodyStyle || {};
+  const [isHovered, setIsHovered] = useState(false);
+
+  const baseStyle = {
+    width: "17rem",
+    boxShadow: "0 6px 6px rgba(0, 0, 0, 0.1)",
+    height: "15rem",
+    transition: "transform 0.3s ease-in-out"
+  };
+
+  const hoverStyle = {
+    transform: "scale(1.05)"
+  };
+
+  const combinedStyle = isHovered && withLink ? { ...baseStyle, ...hoverStyle } : baseStyle;
 
   const cardContent = (
     <Card
-      style={{
-        ...cardStyle,
-        width: "20rem",
-        boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-        height: "10rem",
-      }}
+    style={combinedStyle}
+    onMouseEnter={() => setIsHovered(true)}
+    onMouseLeave={() => setIsHovered(false)}
     >
-      <Card.Body style={{ ...cardBodyStyle }}>
+      <Card.Body>
         <Card.Title>{name}</Card.Title>
-        <Card.Text>Business: {business.join(", ")}</Card.Text>
-        <Card.Text>Regions: {regions.join(", ")}</Card.Text>
+        <div className="d-flex flex-column">
+          <div className="my-4">
+            <Card.Text><strong>Business :</strong> {business.join(", ")}</Card.Text>
+          </div>
+          <div>
+            <Card.Text><strong>Regions :</strong> {regions.join(", ")}</Card.Text>
+          </div>
+        </div>
       </Card.Body>
     </Card>
   );
   if (withLink) {
     return (
-      <div key={id} style={{ margin: "10px" }}>
+      <div key={id} className="m-3">
         <Link to={`/product/${id}`} style={{ textDecoration: "none" }}>
           {cardContent}
         </Link>

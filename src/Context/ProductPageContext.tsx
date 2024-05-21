@@ -23,43 +23,28 @@ export const useProductContext = () => {
 };
 
 export function ProductProvider({ children }: ProductContextProviderProps) {
+  const [products, setProducts] = useState<ProductProps[]>(productData);
 
-  const [products, setProducts] = useState<ProductProps[]>(() => {
-  // localStorage.setItem("productData", JSON.stringify(productData))
-
-    // console.log("adasda", products)
-    try {
-      const storedProducts = localStorage.getItem("productData");
-      
-      return storedProducts ? JSON.parse(storedProducts) : productData;
-    } catch (error) {
-      console.error("Error parsing the data from local storage", error);
-      return productData;
-    }
-  });
   const addProduct = (newProduct: ProductProps) => {
-    const updatedProducts = [...products, newProduct];
-    setProducts(updatedProducts);
-    localStorage.setItem("productData", JSON.stringify(updatedProducts));
+    setProducts((prevProducts) => [...prevProducts, newProduct]);
+    productData.push(newProduct);
   };
 
   const deleteProduct = (productId: string) => {
-    const updatedProduct = products.filter(
-      (product) => product.id !== productId
+    setProducts((prevProducts) =>
+      prevProducts.filter((product) => product.id !== productId)
     );
-    setProducts(updatedProduct);
-    localStorage.setItem("productData", JSON.stringify(updatedProduct));
   };
 
   const contextValue: ProductContextType = {
     products,
     addProduct,
     deleteProduct,
-  }
+  };
 
   return (
     <ProductContext.Provider value={contextValue}>
-        {children}
+      {children}
     </ProductContext.Provider>
-  )
+  );
 }

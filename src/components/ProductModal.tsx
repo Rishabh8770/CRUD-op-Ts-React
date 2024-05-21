@@ -1,5 +1,8 @@
 import React from "react";
 import { Modal, Form, Button } from "react-bootstrap";
+import { MultiSelectDropdown, Option } from "./MultiSelectDropdown";
+import { ProductProps } from "../types/types";
+import { productData } from "../data/productData";
 
 type ProductModalProps = {
   showModal: boolean;
@@ -7,12 +10,10 @@ type ProductModalProps = {
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleSubmit: () => void;
   title: string;
-  newProduct: {
-    name: string;
-    business: string[];
-    regions: string[];
-  };
-  editMode: boolean; 
+  newProduct: ProductProps;
+  editMode: boolean;
+  handleBusinessChange: (selectedOptions: Option[] | null) => void;
+  handleRegionsChange: (selectedOptions: Option[] | null) => void;
 };
 
 export function ProductModal({
@@ -23,7 +24,28 @@ export function ProductModal({
   title,
   newProduct,
   editMode,
+  handleBusinessChange,
+  handleRegionsChange,
 }: ProductModalProps) {
+  
+  const getUniqueOptions = (data: string[]): Option[] => {
+    const uniqueOptions: Option[] = [];
+    data.forEach((item) => {
+      if (!uniqueOptions.some((option) => option.value === item)) {
+        uniqueOptions.push({ value: item, label: item });
+      }
+    });
+    return uniqueOptions;
+  };
+
+  const businessOptions: Option[] = getUniqueOptions(
+    productData.flatMap((product) => product.business)
+  );
+
+  const regionsOptions: Option[] = getUniqueOptions(
+    productData.flatMap((product) => product.regions)
+  );
+
   return (
     <Modal show={showModal} onHide={handleCloseModal}>
       <Modal.Header closeButton>
@@ -42,22 +64,29 @@ export function ProductModal({
               />
             </Form.Group>
           )}
+
           <Form.Group controlId="business">
             <Form.Label>Business</Form.Label>
-            <Form.Control
-              type="text"
-              name="business"
-              value={newProduct.business.join(", ")}
-              onChange={handleInputChange}
+            <MultiSelectDropdown
+              options={businessOptions.map((business) => business.value)}
+              placeholder="Select Buisness"
+              onChange={handleBusinessChange}
+              value={newProduct.business.map((business) => ({
+                value: business,
+                label: business,
+              }))}
             />
           </Form.Group>
           <Form.Group controlId="regions">
             <Form.Label>Regions</Form.Label>
-            <Form.Control
-              type="text"
-              name="regions"
-              value={newProduct.regions.join(", ")}
-              onChange={handleInputChange}
+            <MultiSelectDropdown
+              options={regionsOptions.map((region) => region.value)}
+              placeholder="Select Regions"
+              onChange={handleRegionsChange}
+              value={newProduct.regions.map((region) => ({
+                value: region,
+                label: region,
+              }))}
             />
           </Form.Group>
         </Form>

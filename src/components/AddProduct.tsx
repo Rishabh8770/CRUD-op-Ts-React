@@ -2,9 +2,11 @@ import { useState } from "react";
 import { Button } from "react-bootstrap";
 import { v4 as uuidv4 } from "uuid";
 import { ProductModal } from "./ProductModal";
-import { productData } from "../data/productData";
+// import { productData } from "../data/productData";
 import { ProductProps } from "../types/types";
 import { useProductContext } from "../Context/ProductPageContext";
+import { Option } from "./MultiSelectDropdown";
+import { productData } from "../data/productData";
 
 type NewProductProps = ProductProps;
 
@@ -14,13 +16,13 @@ type ButtonProps = {
   product?: NewProductProps;
 };
 
-export function AddProduct({ onSubmit, title, product }: ButtonProps) {
+export function AddProduct({title}: ButtonProps) {
   const [showModal, setShowModal] = useState(false);
   const [newProduct, setNewProduct] = useState<NewProductProps>({
-    id: product?.id || uuidv4(),
-    name: product?.name || "",
-    business: product?.business || [],
-    regions: product?.regions || [],
+    id: uuidv4(),
+    name: "",
+    business: [],
+    regions: [],
   });
 
   const { addProduct } = useProductContext();
@@ -29,24 +31,40 @@ export function AddProduct({ onSubmit, title, product }: ButtonProps) {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    if (name === "business" || name === "regions") {
-      const arrayValue = value.split(",").map((item) => item.trim());
+    setNewProduct({
+      ...newProduct,
+      [name]: value,
+    });
+  };
+
+  const handleBusinessChange = (selectedOptions: Option[] | null) => {
+    if (selectedOptions) {
       setNewProduct({
         ...newProduct,
-        [name]: arrayValue,
+        business: selectedOptions.map((option) => option.value),
       });
-    } else {
+    }
+  };
+
+  const handleRegionsChange = (selectedOptions: Option[] | null) => {
+    if (selectedOptions) {
       setNewProduct({
         ...newProduct,
-        [name]: value,
+        regions: selectedOptions.map((option) => option.value),
       });
     }
   };
 
   const handleSubmit = () => {
-    onSubmit(newProduct);
     addProduct(newProduct);
-    productData.push(newProduct);
+    setNewProduct({
+      id: uuidv4(),
+      name: "",
+      business: [],
+      regions: [],
+    });
+    console.log("new data::::", productData);
+    
     handleClose();
   };
 
@@ -65,6 +83,8 @@ export function AddProduct({ onSubmit, title, product }: ButtonProps) {
         title="Add Product"
         newProduct={newProduct}
         editMode={false}
+        handleBusinessChange={handleBusinessChange}
+        handleRegionsChange={handleRegionsChange}
       />
     </>
   );

@@ -5,74 +5,76 @@ import { ProductCard } from "../components/ProductCard";
 import { ProductModal } from "../components/ProductModal";
 import { Button } from "react-bootstrap";
 import { ProductProps } from "../types/types";
+import { Option } from "./MultiSelectDropdown";
 
 type Product = ProductProps;
 
 type ButtonProps = {
   onSubmit: (editedProduct: Product) => void;
   title: string;
+  product: Product | undefined
 };
 
 export function ProductDisplay({ onSubmit, title }: ButtonProps) {
   const { id } = useParams<{ id: string }>();
-  const [product, setProduct] = useState<Product | undefined>(()=>{
-    const storedProduct = localStorage.getItem("product_" + id);
-    return storedProduct ? JSON.parse(storedProduct): undefined;
-  })
+  const [product, setProduct] = useState<Product | undefined>(() => {
+    return productData.find((prod) => prod.id === id);
+  });
 
   const [showModal, setShowModal] = useState(false);
-  const [editedProduct, setEditedProduct] = useState<Product | undefined>(
-    product
-  );
+  const [editedProduct, setEditedProduct] = useState<Product | undefined>(product);
 
-  useEffect(()=> {
-    if(!product){
-        const foundProduct = productData.find((prod)=> prod.id === id);
-        if(foundProduct){
-            setProduct(foundProduct)
-            localStorage.setItem("product_"+id, JSON.stringify(foundProduct))
-        }
+
+  useEffect(() => {
+    const foundProduct = productData.find((prod) => prod.id === id);
+    if (foundProduct) {
+      setProduct(foundProduct);
+      setEditedProduct(foundProduct);
+    } else {
+      setProduct(undefined);
     }
-  }, [id, product])
+  }, [id]);
 
-  const handleShowModal = () => setShowModal(true);
+  const handleShowModal = () => {
+    setEditedProduct(product);
+    setShowModal(true);
+  };
   const handleCloseModal = () => setShowModal(false);
 
-  const handleInputChange = (
-  e: React.ChangeEvent<HTMLInputElement>
-) => {
-  const { name, value } = e.target;
-  if (editedProduct) {
-    setEditedProduct({
-      ...editedProduct,
-      [name]:
-        name === "name"
-          ? value 
-          : value.split(",").map((item) => item.trim()),
-    });
-  }
-};
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    if (editedProduct) {
+      setEditedProduct({
+        ...editedProduct,
+        [name]: value,
+      });
+    }
+  };
+
+  const handleBusinessChange = (selectedOptions: Option[] | null) => {
+    if (selectedOptions && editedProduct) {
+      setEditedProduct({
+        ...editedProduct,
+        business: selectedOptions.map((option) => option.value),
+      });
+    }
+  };
+  const handleRegionsChange = (selectedOptions: Option[] | null) => {
+    if (selectedOptions && editedProduct) {
+      setEditedProduct({
+        ...editedProduct,
+        regions: selectedOptions.map((option) => option.value),
+      });
+    }
+  };
 
   const handleSubmit = () => {
     if (editedProduct) {
       onSubmit(editedProduct);
-      localStorage.setItem("product_"+ id, JSON.stringify(editedProduct))
-      console.log("Edited Product:", editedProduct);
+      productData.push(editedProduct)
+      setProduct(editedProduct);
       handleCloseModal();
     }
-  };
-
-  const cardStyle: React.CSSProperties = {
-    width: "50rem",
-    backgroundColor: "#f8f9fa",
-    border: "1px solid #dee2e6",
-    borderRadius: "0.25rem",
-    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-    marginBottom: "10px",
-  };
-
-  const cardBodyStyle: React.CSSProperties = {
-    padding: "1.25rem",
   };
 
   return (
@@ -86,9 +88,16 @@ export function ProductDisplay({ onSubmit, title }: ButtonProps) {
             handleSubmit={handleSubmit}
             title="Edit Product"
             newProduct={
-              editedProduct || { id: "", name: "", business: [], regions: [] }
+              editedProduct || {
+                id: "",
+                name: "",
+                business: product.business || [],
+                regions: product.regions || [],
+              }
             }
-            editMode={true} 
+            editMode={true}
+            handleBusinessChange={handleBusinessChange}
+            handleRegionsChange={handleRegionsChange}
           />
           <ProductCard
             id={product.id}
@@ -96,7 +105,6 @@ export function ProductDisplay({ onSubmit, title }: ButtonProps) {
             business={product.business}
             regions={product.regions}
             withLink={false}
-            customStyles={{ cardStyle, cardBodyStyle }}
           />
           <div className="container-fluid">
             <Button className="" onClick={handleShowModal}>

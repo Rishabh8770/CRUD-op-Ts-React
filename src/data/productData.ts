@@ -9,7 +9,7 @@ export const productData = [
         id: "2",
         name: "Coca-cola",
         business: ["Coca-Cola", "McDonald's", "Bottlin Co.", "Swire Group"],
-        regions: ["Globally"]
+        regions: ["Global"]
     },
     {
         id: "3",
@@ -58,5 +58,17 @@ export const productData = [
         name: "Samsung",
         business: ["Galaxy", "Qualcomm", "Corning", "Google"],
         regions: ["USA", "Korea"]
+    },
+    {
+        id: "11",
+        name: "Laptop",
+        business: ["Mac", "Asus", "Microsoft", "Acer"],
+        regions: ["USA", "China, Japan"]
+    },
+    {
+        id: "12",
+        name: "Tablet",
+        business: ["Galaxy", "Apple", "Corning", "Google"],
+        regions: ["Global"]
     },
 ]
