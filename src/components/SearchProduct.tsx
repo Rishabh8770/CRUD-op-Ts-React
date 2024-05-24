@@ -11,7 +11,7 @@ export function SearchProduct({ placeholder, onSearch }: SearchProductProps) {
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     setSearch(value);
-    onSearch(value);
+    onSearch(value.trim());
   };
 
   return (

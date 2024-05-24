@@ -174,30 +174,5 @@
       "North America",
       "Japan"
     ]
-  },
-  {
-    "id": "14e851e3-eed1-4965-89d9-9a46e742d415",
-    "name": "asdas",
-    "business": [
-      "Foxconn",
-      "Naughty Dog",
-      "Square Enix"
-    ],
-    "regions": [
-      "Taiwan",
-      "North America",
-      "China"
-    ]
-  },
-  {
-    "id": "d793bc2f-f76a-418e-9a6e-0769d2330456",
-    "name": "sdfs",
-    "business": [
-      "Foxconn",
-      "Activision"
-    ],
-    "regions": [
-      "Japan"
-    ]
   }
 ]
