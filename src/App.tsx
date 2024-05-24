@@ -6,7 +6,7 @@ import { ProductProvider } from "./Context/ProductPageContext";
 
 function App() {
   return (
-    <>
+    <div>
       <ProductProvider>
         <PageHeader />
         <Routes>
@@ -17,7 +17,7 @@ function App() {
           ></Route>
         </Routes>
       </ProductProvider>
-    </>
+    </div>
   );
 }
 

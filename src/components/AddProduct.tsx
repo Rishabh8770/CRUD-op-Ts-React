@@ -2,11 +2,10 @@ import { useState } from "react";
 import { Button } from "react-bootstrap";
 import { v4 as uuidv4 } from "uuid";
 import { ProductModal } from "./ProductModal";
-// import { productData } from "../data/productData";
 import { ProductProps } from "../types/types";
 import { useProductContext } from "../Context/ProductPageContext";
 import { Option } from "./MultiSelectDropdown";
-import { productData } from "../data/productData";
+
 
 type NewProductProps = ProductProps;
 
@@ -55,23 +54,39 @@ export function AddProduct({ title }: ButtonProps) {
     }
   };
 
-  const handleSubmit = () => {
-    addProduct(newProduct);
-    setNewProduct({
-      id: uuidv4(),
-      name: "",
-      business: [],
-      regions: [],
-    });
-    console.log("new data::::", productData);
+  const handleSubmit = async () => {
+    try {
+      const response = await fetch('http://localhost:3000/products', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newProduct),
+      });
 
-    handleClose();
+      if (!response.ok) {
+        throw new Error('Failed to add product');
+      }
+
+      const addedProduct = await response.json();
+      await addProduct(addedProduct);
+      
+      setNewProduct({
+        id: uuidv4(),
+        name: "",
+        business: [],
+        regions: [],
+      });
+      handleClose();
+    } catch (error) {
+      console.error('Error adding product:', error);
+    }
   };
 
   return (
     <>
       <div className="mx-3">
-        <Button variant="outline-primary" onClick={handleShow}>
+        <Button variant="success" onClick={handleShow}>
           {title}
         </Button>
       </div>

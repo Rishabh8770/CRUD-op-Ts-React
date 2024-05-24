@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Modal, Form, Button } from "react-bootstrap";
 import { MultiSelectDropdown, Option } from "./MultiSelectDropdown";
 import { ProductProps } from "../types/types";
-import { productData } from "../data/productData";
+import axios from "axios";
+// import { productData } from "../data/productData";
 
 type ProductModalProps = {
   showModal: boolean;
@@ -27,6 +28,21 @@ export function ProductModal({
   handleBusinessChange,
   handleRegionsChange,
 }: ProductModalProps) {
+  const [products, setProducts] = useState<ProductProps[]>([]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get("http://localhost:3000/products");
+        console.log("Fetched products:", response.data);
+        setProducts(response.data);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+    fetchProducts();
+  }, []);
+
   const getUniqueOptions = (data: string[]): Option[] => {
     const uniqueOptions: Option[] = [];
     data.forEach((item) => {
@@ -36,14 +52,14 @@ export function ProductModal({
     });
     return uniqueOptions;
   };
+  
+  const businessOptions = useMemo(() => {
+    return getUniqueOptions(products.flatMap((product) => product.business));
+  }, [products]);
 
-  const businessOptions: Option[] = getUniqueOptions(
-    productData.flatMap((product) => product.business)
-  );
-
-  const regionsOptions: Option[] = getUniqueOptions(
-    productData.flatMap((product) => product.regions)
-  );
+  const regionsOptions = useMemo(() => {
+    return getUniqueOptions(products.flatMap((product) => product.regions));
+  }, [products]);
 
   return (
     <Modal show={showModal} onHide={handleCloseModal}>

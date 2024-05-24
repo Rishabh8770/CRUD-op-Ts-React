@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { productData } from "../data/productData";
 import { ProductCard } from "../components/ProductCard";
 import { ProductModal } from "../components/ProductModal";
 import { Button } from "react-bootstrap";
@@ -8,39 +7,32 @@ import { ProductProps } from "../types/types";
 import { Option } from "./MultiSelectDropdown";
 import { useProductContext } from "../Context/ProductPageContext";
 
-type Product = ProductProps;
-
 type ButtonProps = {
-  onSubmit: (editedProduct: Product) => void;
+  onSubmit: (editedProduct: ProductProps) => void;
   title: string;
-  product: Product | undefined;
+  product: ProductProps | undefined;
 };
 
 export function ProductDisplay({ onSubmit, title }: ButtonProps) {
   const { id } = useParams<{ id: string }>();
-  const [product, setProduct] = useState<Product | undefined>(() => {
-    return productData.find((prod) => prod.id === id);
-  });
-
+  const { products, deleteProduct } = useProductContext();
+  const [product, setProduct] = useState<ProductProps | undefined>(undefined);
   const [showModal, setShowModal] = useState(false);
-  const [editedProduct, setEditedProduct] = useState<Product | undefined>(
-    product
-  );
-  const { deleteProduct } = useProductContext();
+  const [editedProduct, setEditedProduct] = useState<ProductProps | undefined>(undefined);
 
   useEffect(() => {
-    const foundProduct = productData.find((prod) => prod.id === id);
+    const foundProduct = products.find((prod) => prod.id === id);
     if (foundProduct) {
       setProduct(foundProduct);
       setEditedProduct(foundProduct);
     } else {
       setProduct(undefined);
     }
-  }, [id]);
+  }, [id, products]);
 
   const handleShowModal = () => {
-    setEditedProduct(product);
     setShowModal(true);
+    setEditedProduct(product);
   };
   const handleCloseModal = () => setShowModal(false);
 
@@ -74,9 +66,7 @@ export function ProductDisplay({ onSubmit, title }: ButtonProps) {
   const handleSubmit = () => {
     if (editedProduct) {
       onSubmit(editedProduct);
-      productData.push(editedProduct);
-      setProduct(editedProduct);
-      handleCloseModal();
+      setShowModal(false)
     }
   };
 

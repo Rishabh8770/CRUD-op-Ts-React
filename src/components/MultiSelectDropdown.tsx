@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import Select, { MultiValue } from "react-select";
 import makeAnimated from "react-select/animated";
 
@@ -20,6 +21,10 @@ export const MultiSelectDropdown = ({
   onChange,
   value,
 }: MultiSelectDropdownProps) => {
+  const memoizedOptions = useMemo(
+    () => options.map((option) => ({ value: option, label: option })),
+    [options]
+  );
   const handleSelectionChange = (newValue: MultiValue<Option>) => {
     onChange(newValue as Option[]);
   };
@@ -29,7 +34,7 @@ export const MultiSelectDropdown = ({
       isMulti
       value={value}
       onChange={handleSelectionChange}
-      options={options.map((option) => ({ value: option, label: option }))}
+      options={memoizedOptions}
       placeholder={placeholder}
       components={animatedComponents}
       closeMenuOnSelect={false}

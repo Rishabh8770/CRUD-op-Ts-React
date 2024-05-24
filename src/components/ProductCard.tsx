@@ -31,13 +31,14 @@ export function ProductCard({
       style={{
         width: "17rem",
         boxShadow: "0 6px 6px rgba(0, 0, 0, 0.1)",
-        height: "15rem",
+        height: "17rem",
+        overflowY:"hidden",
       }}
     >
       <Card.Body>
         <Card.Title>{name}</Card.Title>
         <div className="d-flex flex-column">
-          <div className="my-4">
+          <div className="my-4" style={{ height: "4rem" }}>
             <Card.Text>
               <strong>Business :</strong> {business.join(", ")}
             </Card.Text>
@@ -57,11 +58,13 @@ export function ProductCard({
               cursor: "pointer",
             }}
             onClick={handleDelete}
+            
           />
         )}
       </Card.Body>
     </Card>
   );
+
   if (withLink) {
     return (
       <div key={id} className="m-3">

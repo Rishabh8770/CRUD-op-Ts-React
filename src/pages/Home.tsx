@@ -2,30 +2,20 @@ import { useState } from "react";
 import { AddProduct } from "../components/AddProduct";
 import { ProductCard } from "../components/ProductCard";
 import { ProductProps } from "../types/types";
-// import { Button } from "react-bootstrap";
 import { SortProduct, SortOptions } from "../components/SortProduct";
 import { useProductContext } from "../Context/ProductPageContext";
 import { SearchProduct } from "../components/SearchProduct";
 import { MultiSelectDropdown, Option } from "../components/MultiSelectDropdown";
 
-type Product = ProductProps;
-
 export function Home() {
   const { products, addProduct, deleteProduct } = useProductContext();
 
   const [searchProduct, setSearchProduct] = useState("");
-  const [sortOption, setSortOption] =
-    useState<SortOptions>("--please select--");
-  const [selectBusinessOptions, setSelectBusinessOptions] = useState<
-    Option[] | null
-  >(null);
-  const [selectRegionOptions, setSelectRegionOptions] = useState<
-    Option[] | null
-  >(null);
+  const [sortOption, setSortOption] =useState<SortOptions>("--please select--");
+  const [selectBusinessOptions, setSelectBusinessOptions] = useState<Option[] | null>(null);
+  const [selectRegionOptions, setSelectRegionOptions] = useState<Option[] | null>(null);
 
-  const handleSelectBusinessFilterChange = (
-    selectedOptions: Option[] | null
-  ) => {
+  const handleSelectBusinessFilterChange = (selectedOptions: Option[] | null) => {
     setSelectBusinessOptions(selectedOptions);
   };
 
@@ -41,7 +31,9 @@ export function Home() {
     setSortOption(sortProduct);
   };
 
-  const applyFilterAndSort = (product: Product) => {
+  const applyFilterAndSort = (product: ProductProps) => {
+    if (!product) return false;
+
     if (searchProduct) {
       if (!product.name.toLowerCase().includes(searchProduct.toLowerCase())) {
         return false;
@@ -66,18 +58,12 @@ export function Home() {
         return false;
       }
     }
-
-    switch (sortOption) {
-      case "name":
-        return true;
-      case "business":
-        return true;
-      case "regions":
-        return true;
-      default:
-        return true;
-    }
+    return true;
   };
+
+  const handleDelete = (id:string) => {
+    deleteProduct(id)
+  }
 
   const sortedAndFilteredProducts = products
     .filter(applyFilterAndSort)
@@ -93,12 +79,11 @@ export function Home() {
     });
 
   const businessOptions: string[] = [
-    ...new Set(products.flatMap((product) => product.business)),
-  ];
+    ...new Set(products.filter(Boolean).flatMap((product) => product.business)),
+  ]; 
   const regionOptions: string[] = [
-    ...new Set(products.flatMap((product) => product.regions)),
-  ];
-
+    ...new Set(products.filter(Boolean).flatMap((product) => product.regions)),
+  ]; 
   return (
     <div>
       <div className="d-flex align-items-center justify-content-center">
@@ -107,11 +92,10 @@ export function Home() {
         </div>
         <SortProduct onProductSort={handleProductSort} />
         <div className="d-flex m-2 align-items-center">
-          {" "}
           Filter By:
           <div
             className="d-flex border align-items-center mx-2 p-2"
-            style={{ borderRadius: "10px" }}
+            style={{ borderRadius: "10px", background:'#fff' }}
           >
             <SearchProduct
               placeholder="Search Product"
@@ -119,7 +103,6 @@ export function Home() {
             />
             <div className="d-flex align-items-center">
               <h6 className="mx-2 mb-0">Business:</h6>
-
               <MultiSelectDropdown
                 options={businessOptions}
                 placeholder="Select Business"
@@ -129,7 +112,6 @@ export function Home() {
             </div>
             <div className="d-flex align-items-center">
               <h6 className="mx-2 mb-0">Regions:</h6>
-
               <MultiSelectDropdown
                 options={regionOptions}
                 placeholder="Select Regions"
@@ -145,9 +127,12 @@ export function Home() {
           sortedAndFilteredProducts.map((product) => (
             <div key={product.id} style={{ margin: "10px" }}>
               <ProductCard
-                {...product}
+                id={product.id}
+                name={product.name}
+                business={product.business}
+                regions={product.regions}
                 withLink
-                deleteProduct={deleteProduct}
+                deleteProduct={handleDelete}
                 isDelete
               />
             </div>
