@@ -11,6 +11,6 @@
       "forceConsistentCasingInFileNames": true,
       "jsx": "react"  // If you need to support .tsx files
     },
-    "include": ["server/**/*.ts", "server/**/*.tsx"]
+    "include": ["server/**/*.ts", "server/**/*.tsx", "server/**/*.json"]
   }
   

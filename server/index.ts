@@ -26,7 +26,7 @@ const writeData = (data: ProductProps[]): void => {
   fs.writeFileSync(dataFilePath, JSON.stringify(data, null, 2), "utf8");
 };
 
-app.get("/products", (req, res) => {
+app.get("/products", (_req, res) => {
   const items = readData();
   res.json(items);
 });
