@@ -14,7 +14,7 @@ function App() {
           <Route
             path="/product/:id"
             element={<ProductDisplayAndEdit />}
-          ></Route>
+          />
         </Routes>
       </ProductProvider>
     </div>

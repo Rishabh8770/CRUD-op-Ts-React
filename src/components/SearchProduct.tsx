@@ -20,17 +20,11 @@ export function SearchProduct({ placeholder, onSearch }: SearchProductProps) {
         Name:
       </label>
       <input
+        className="rounded p-1 border border-gray-300 mx-2"
         type="text"
         placeholder={placeholder}
         value={search}
         onChange={handleChange}
-        style={{
-          borderRadius: "5px",
-          width: "auto",
-          padding: "5px",
-          marginLeft: "5px",
-          border: "1px solid hsl(0, 0%, 80%)",
-        }}
       />
     </div>
   );

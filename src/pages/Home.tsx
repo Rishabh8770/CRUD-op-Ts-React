@@ -34,30 +34,22 @@ export function Home() {
   const applyFilterAndSort = (product: ProductProps) => {
     if (!product) return false;
 
-    if (searchProduct) {
-      if (!product.name.toLowerCase().includes(searchProduct.toLowerCase())) {
-        return false;
-      }
+    // Check if there's a search product and if it matches the product name
+    if (searchProduct && !product.name.toLowerCase().includes(searchProduct.toLowerCase())) {
+      return false
     }
 
-    if (selectBusinessOptions && selectBusinessOptions.length > 0) {
-      if (
-        !selectBusinessOptions.every((option) =>
-          product.business.includes(option.value)
-        )
-      ) {
-        return false;
-      }
+    // Check if there are selected business options and if the product's business includes them
+    if (selectBusinessOptions && selectBusinessOptions.length > 0 &&  !selectBusinessOptions.every((option) => product.business.includes(option.value))) {
+      return false
     }
-    if (selectRegionOptions && selectRegionOptions.length > 0) {
-      if (
-        !selectRegionOptions.every((option) =>
-          product.regions.includes(option.value)
-        )
-      ) {
-        return false;
-      }
+
+    // Check if there are selected region options and if the product's regions include them
+    if (selectRegionOptions && selectRegionOptions.length > 0 && !selectRegionOptions.every((option) => product.regions.includes(option.value))) {
+      return false
     }
+
+    // If all conditions pass, return true
     return true;
   };
 

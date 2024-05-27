@@ -25,12 +25,7 @@ export const SortProduct = ({ onProductSort }: SortProductProps) => {
         name="filter"
         value={sortOption}
         onChange={handleProductSort}
-        style={{
-          borderRadius: "5px",
-          padding: "5px",
-          width: "auto",
-          border: "1px solid hsl(0, 0%, 80%)",
-        }}
+        className="rounded p-2 border border-gray-300"
       >
         <option value="">-Please select-</option>
         <option value="name">Name</option>

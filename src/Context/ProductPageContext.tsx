@@ -1,12 +1,14 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { ProductProps } from "../types/types";
 import axios from "axios";
+import { baseUrl } from "../config";
 
 type ProductContextType = {
   products: ProductProps[];
   addProduct: (newProduct: ProductProps) => void;
   deleteProduct: (productId: string) => void;
-  updateProduct: (updatedProduct: ProductProps) => void
+  updateProduct: (updatedProduct: ProductProps) => void;
+  fetchProducts:()=>void;
 };
 
 type ProductContextProviderProps = {
@@ -32,43 +34,56 @@ export function ProductProvider({ children }: ProductContextProviderProps) {
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/products");
-      console.log("Fetched products:", response.data);
+      const response = await axios.get(`${baseUrl}/products`);
       setProducts(response.data);
     } catch (error) {
       console.error("Error fetching products:", error);
     }
   };
 
-  const addProduct = async (product: ProductProps) => {
-    console.log("Adding product:", product);
-    setProducts((prevProducts) => {
-      const newProducts = [...prevProducts, product];
-      console.log("Updated product list:", newProducts);
-      return newProducts;
-    });
+  const addProduct = async (newProduct: ProductProps) => {
+    try {
+      const response = await fetch(`${baseUrl}/products`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newProduct),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to add product");
+      }
+
+      const addedProduct = await response.json();
+      setProducts((prevProducts) => [...prevProducts, addedProduct]);
+    } catch (error) {
+      console.error("Error adding product", error);
+    }
   };
 
   const deleteProduct = (productId: string) => {
-    axios.delete(`http://localhost:3000/products/${productId}`).then(() => {
-      setProducts((prevProducts) =>{
-        const deleted = prevProducts.filter((product) => product.id !== productId)
-        console.log("deleted prod:::", deleted)
-      return deleted
-      });
-    });
+    try {
+      axios.delete(`${baseUrl}/products/${productId}`);
+      setProducts((prevProducts) =>
+        prevProducts.filter((product) => product.id !== productId)
+      );
+    } catch (error) {
+      console.error("Error deleting product", error);
+    }
   };
 
   const updateProduct = async (updatedProduct: ProductProps) => {
     try {
-      const response = await axios.put(`http://localhost:3000/products/${updatedProduct.id}`, updatedProduct);
-      console.log("Response from updateProduct API:", response.data);
+      const response = await axios.put(
+        `${baseUrl}/products/${updatedProduct.id}`,
+        updatedProduct
+      );
       const updatedProducts = products.map((product) =>
         product.id === updatedProduct.id ? updatedProduct : product
       );
       setProducts(updatedProducts);
-      console.log("Products after update:", updatedProducts);
-      return response.data; 
+      return response.data;
     } catch (error) {
       console.error("Error updating product:", error);
       throw error;
@@ -79,7 +94,8 @@ export function ProductProvider({ children }: ProductContextProviderProps) {
     products,
     addProduct,
     deleteProduct,
-    updateProduct
+    updateProduct,
+    fetchProducts,
   };
 
   return (

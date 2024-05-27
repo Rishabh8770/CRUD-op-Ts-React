@@ -3,11 +3,7 @@ import { NavLink } from "react-router-dom";
 
 export function PageHeader() {
   return (
-    <NavbarBs
-      sticky="top"
-      className="bg-white shadow-sm mb-3"
-      style={{ paddingLeft: "5rem" }}
-    >
+    <NavbarBs sticky="top" className="bg-white shadow-sm mb-3 px-5">
       <NavbarBs.Brand href="/">Product-Page</NavbarBs.Brand>
       <Nav className="me-auto">
         <Nav.Link to="/" as={NavLink}>

@@ -56,21 +56,7 @@ export function AddProduct({ title }: ButtonProps) {
 
   const handleSubmit = async () => {
     try {
-      const response = await fetch('http://localhost:3000/products', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newProduct),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to add product');
-      }
-
-      const addedProduct = await response.json();
-      await addProduct(addedProduct);
-      
+      await addProduct(newProduct);
       setNewProduct({
         id: uuidv4(),
         name: "",
