@@ -8,7 +8,7 @@ type ProductContextType = {
   addProduct: (newProduct: ProductProps) => void;
   deleteProduct: (productId: string) => void;
   updateProduct: (updatedProduct: ProductProps) => void;
-  fetchProducts:() => void;
+  fetchProducts: () => void;
 };
 
 type ProductContextProviderProps = {
@@ -65,11 +65,13 @@ export function ProductProvider({ children }: ProductContextProviderProps) {
 
   // Delete product Method
   const deleteProduct = (productId: string) => {
-    try{
-      axios.delete(`${baseUrl}/products/${productId}`).then(() => 
-        setProducts((prevProducts) => prevProducts.filter((product) => product.id !== productId)));
-    }catch (error){
-      console.error("Error deleting the product", error)
+    try {
+      axios.delete(`${baseUrl}/products/${productId}`);
+      setProducts((prevProducts) =>
+        prevProducts.filter((product) => product.id !== productId)
+      );
+    } catch (error) {
+      console.error("Error deleting the product", error);
     }
   };
 
