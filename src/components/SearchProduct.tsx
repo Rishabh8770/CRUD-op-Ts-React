@@ -20,11 +20,11 @@ export function SearchProduct({ placeholder, onSearch }: SearchProductProps) {
         Name:
       </label>
       <input
-        className="rounded p-1 border border-gray-300 mx-2"
         type="text"
         placeholder={placeholder}
         value={search}
         onChange={handleChange}
+        className="rounded w-auto p-2 mx-1 border border-gray-300"
       />
     </div>
   );

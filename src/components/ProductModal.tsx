@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useMemo } from "react";
 import { Modal, Form, Button } from "react-bootstrap";
 import { MultiSelectDropdown, Option } from "./MultiSelectDropdown";
 import { ProductProps } from "../types/types";
@@ -28,11 +28,7 @@ export function ProductModal({
   handleBusinessChange,
   handleRegionsChange,
 }: ProductModalProps) {
-  const { products, fetchProducts } = useProductContext();
-
-  useEffect(() => {
-    fetchProducts();
-  }, [fetchProducts]);
+  const {products} = useProductContext()
 
   const getUniqueOptions = (data: string[]): Option[] => {
     const uniqueOptions: Option[] = [];
@@ -57,11 +53,18 @@ export function ProductModal({
       <Modal.Header closeButton>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
+      <div className="m-3 mb-0">
+        <p className="text-xl">
+          (<span className="text-danger">*</span>) Mandatory Fields
+        </p>
+      </div>
       <Modal.Body>
         <Form>
           {!editMode && (
             <Form.Group controlId="productName">
-              <Form.Label>Product Name</Form.Label>
+              <Form.Label>
+                Product Name<span className="text-danger">*</span>
+              </Form.Label>
               <Form.Control
                 type="text"
                 name="name"
@@ -72,7 +75,9 @@ export function ProductModal({
           )}
 
           <Form.Group controlId="business">
-            <Form.Label>Business</Form.Label>
+            <Form.Label>
+              Business<span className="text-danger">*</span>
+            </Form.Label>
             <MultiSelectDropdown
               options={businessOptions.map((business) => business.value)}
               placeholder="Select Buisness"
@@ -84,7 +89,9 @@ export function ProductModal({
             />
           </Form.Group>
           <Form.Group controlId="regions">
-            <Form.Label>Regions</Form.Label>
+            <Form.Label>
+              Regions<span className="text-danger">*</span>
+            </Form.Label>
             <MultiSelectDropdown
               options={regionsOptions.map((region) => region.value)}
               placeholder="Select Regions"

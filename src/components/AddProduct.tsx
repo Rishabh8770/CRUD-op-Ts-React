@@ -5,19 +5,22 @@ import { ProductModal } from "./ProductModal";
 import { ProductProps } from "../types/types";
 import { useProductContext } from "../Context/ProductPageContext";
 import { Option } from "./MultiSelectDropdown";
-
-
-type NewProductProps = ProductProps;
+import {
+  notifyAddProduct,
+  notifyErrorAddingProduct,
+  notifyMandatoryWarn,
+} from "../utils/NotificationUtils";
+import {NotificationContainer} from './UserFeedbacks'
 
 type ButtonProps = {
   title: string;
-  onSubmit: (newProduct: NewProductProps) => void;
-  product?: NewProductProps;
+  onSubmit: (newProduct: ProductProps) => void;
+  product?: ProductProps;
 };
 
 export function AddProduct({ title }: ButtonProps) {
   const [showModal, setShowModal] = useState(false);
-  const [newProduct, setNewProduct] = useState<NewProductProps>({
+  const [newProduct, setNewProduct] = useState<ProductProps>({
     id: uuidv4(),
     name: "",
     business: [],
@@ -55,7 +58,14 @@ export function AddProduct({ title }: ButtonProps) {
   };
 
   const handleSubmit = async () => {
+    if (
+      !newProduct.name || newProduct.business.length === 0 || newProduct.regions.length === 0) {
+      notifyMandatoryWarn();
+      return;
+    }
+
     try {
+      // throw new Error("Error adding product") // simulating an error to test notify Error
       await addProduct(newProduct);
       setNewProduct({
         id: uuidv4(),
@@ -63,9 +73,13 @@ export function AddProduct({ title }: ButtonProps) {
         business: [],
         regions: [],
       });
+      notifyAddProduct();
       handleClose();
     } catch (error) {
-      console.error('Error adding product:', error);
+      notifyErrorAddingProduct();
+      // handleClose();
+
+      console.error("Error adding product:", error);
     }
   };
 
@@ -87,6 +101,7 @@ export function AddProduct({ title }: ButtonProps) {
         handleBusinessChange={handleBusinessChange}
         handleRegionsChange={handleRegionsChange}
       />
+      <NotificationContainer />
     </>
   );
 }

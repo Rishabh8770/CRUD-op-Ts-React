@@ -11,10 +11,7 @@ function App() {
         <PageHeader />
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route
-            path="/product/:id"
-            element={<ProductDisplayAndEdit />}
-          />
+          <Route path="/product/:id" element={<ProductDisplayAndEdit />} />
         </Routes>
       </ProductProvider>
     </div>
