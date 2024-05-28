@@ -6,6 +6,8 @@ import { Button } from "react-bootstrap";
 import { ProductProps } from "../types/types";
 import { Option } from "./MultiSelectDropdown";
 import { useProductContext } from "../Context/ProductPageContext";
+import { notifyEditProduct, notifyErrorEditingProduct, notifyMandatoryWarn } from "../utils/NotificationUtils";
+import {NotificationContainer} from './UserFeedbacks'
 
 type ButtonProps = {
   onSubmit: (editedProduct: ProductProps) => void;
@@ -18,7 +20,9 @@ export function ProductDisplay({ onSubmit, title }: ButtonProps) {
   const { products, deleteProduct } = useProductContext();
   const [product, setProduct] = useState<ProductProps | undefined>(undefined);
   const [showModal, setShowModal] = useState(false);
-  const [editedProduct, setEditedProduct] = useState<ProductProps | undefined>(undefined);
+  const [editedProduct, setEditedProduct] = useState<ProductProps | undefined>(
+    undefined
+  );
 
   useEffect(() => {
     const foundProduct = products.find((prod) => prod.id === id);
@@ -64,9 +68,22 @@ export function ProductDisplay({ onSubmit, title }: ButtonProps) {
   };
 
   const handleSubmit = () => {
-    if (editedProduct) {
-      onSubmit(editedProduct);
-      setShowModal(false)
+
+    if(editedProduct?.business.length === 0 || editedProduct?.regions.length ===0){
+      notifyMandatoryWarn();
+      return;
+    }
+
+    try {
+      // throw new Error("error editing") // to simulate Error and test notifyError
+      if (editedProduct) {
+        onSubmit(editedProduct);
+        notifyEditProduct();
+        setShowModal(false);
+      }
+    } catch (error) {
+      notifyErrorEditingProduct();
+      console.error("Error on editing the product", error);
     }
   };
 
@@ -102,7 +119,7 @@ export function ProductDisplay({ onSubmit, title }: ButtonProps) {
             deleteProduct={deleteProduct}
           />
           <div className="container-fluid">
-            <Button className="" onClick={handleShowModal}>
+            <Button onClick={handleShowModal}>
               {title}
             </Button>
           </div>
@@ -110,6 +127,7 @@ export function ProductDisplay({ onSubmit, title }: ButtonProps) {
       ) : (
         <div>Product not found</div>
       )}
+      <NotificationContainer />
     </>
   );
 }
