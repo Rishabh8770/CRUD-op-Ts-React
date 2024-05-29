@@ -1,6 +1,7 @@
-import { OctagonAlert } from "lucide-react";
+import { ShieldAlert } from "lucide-react";
 import { Button } from "react-bootstrap";
 import { toast, ToastOptions } from "react-toastify";
+// import { ProductProps } from "../types/types";
 
 const options: ToastOptions = {
   position: "bottom-right",
@@ -10,6 +11,11 @@ const options: ToastOptions = {
   pauseOnHover: true,
   draggable: true,
   progress: undefined,
+};
+
+type NotifyDeleteProps = {
+  name: string;
+  id: string;
 };
 
 export const notifyAddProduct = () => {
@@ -33,7 +39,7 @@ export const notifyMandatoryWarn = () => {
 };
 
 export const notifyDeleteProduct = (
-  _id: string,
+  product: NotifyDeleteProps,
   deleteCallback: () => void
 ) => {
   const confirmDelete = () => {
@@ -48,16 +54,13 @@ export const notifyDeleteProduct = (
   };
 
   const DeleteConfirmation = () => (
-    <div className="p-1">
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-        }}
-      >
-        <OctagonAlert color="#f20202" />
-        <p className="mx-2 mb-0">
-          Are you sure you want to delete this product?
+    <div className="d-flex justify-content-center flex-column">
+      <div>
+        <div className="d-flex justify-content-center align-items-center">
+          <ShieldAlert color="#fb2d2d" width={50} height={50} />
+        </div>
+        <p className="mx-2 my-3 d-flex justify-content-center">
+          Are you sure you want to delete product : "{product.name}"?
         </p>
       </div>
       <div className="m-2 d-flex align-items-center justify-content-center">
@@ -80,9 +83,10 @@ export const notifyDeleteProduct = (
     position: "top-center",
     autoClose: false,
     style: {
-      width: "35rem",
-      fontSize: "1.2rem",
-      right: "7.5rem",
+      minWidth: "45rem",
+      fontSize: "1.3rem",
+      right: "12.5rem",
+      border: "0.063rem solid red",
     },
   });
 };

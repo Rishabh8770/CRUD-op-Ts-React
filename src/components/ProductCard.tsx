@@ -22,9 +22,10 @@ export function ProductCard({
   isDelete = true,
   deleteProduct,
 }: ProductListProps) {
+
   const handleDelete = (e: React.MouseEvent) => {
     e.preventDefault();
-    notifyDeleteProduct(id, () => deleteProduct(id));
+    notifyDeleteProduct({id, name}, () => deleteProduct(id));
   };
 
   const cardContent = (
