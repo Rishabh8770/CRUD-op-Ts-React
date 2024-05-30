@@ -22,25 +22,17 @@ export function ProductCard({
   isDelete = true,
   deleteProduct,
 }: ProductListProps) {
-
   const handleDelete = (e: React.MouseEvent) => {
     e.preventDefault();
-    notifyDeleteProduct({id, name}, () => deleteProduct(id));
+    notifyDeleteProduct({ id, name }, () => deleteProduct(id));
   };
 
   const cardContent = (
-    <Card
-      style={{
-        width: "17rem",
-        boxShadow: "0 6px 6px rgba(0, 0, 0, 0.1)",
-        height: "17rem",
-        overflowY: "hidden",
-      }}
-    >
+    <Card className="w-[17rem] h-[17rem] overflow-y-hidden drop-shadow-xl">
       <Card.Body>
         <Card.Title>{name}</Card.Title>
         <div className="d-flex flex-column">
-          <div className="my-4" style={{ height: "4rem" }}>
+          <div className="my-4 h-16">
             <Card.Text>
               <strong>Business :</strong> {business.join(", ")}
             </Card.Text>
@@ -53,12 +45,7 @@ export function ProductCard({
         </div>
         {isDelete && (
           <Trash2
-            style={{
-              position: "absolute",
-              bottom: "10px",
-              right: "10px",
-              cursor: "pointer",
-            }}
+            className="absolute bottom-3 right-3 cursor-pointer"
             onClick={handleDelete}
           />
         )}
@@ -76,7 +63,7 @@ export function ProductCard({
     );
   } else {
     return (
-      <div key={id} style={{ margin: "10px" }}>
+      <div key={id} className="m-3">
         {cardContent}
       </div>
     );

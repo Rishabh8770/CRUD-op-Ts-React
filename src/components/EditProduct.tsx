@@ -118,7 +118,7 @@ export function ProductDisplay({ onSubmit, title }: ButtonProps) {
             isDelete={false}
             deleteProduct={deleteProduct}
           />
-          <div className="container-fluid">
+          <div className="m-3">
             <Button onClick={handleShowModal}>
               {title}
             </Button>

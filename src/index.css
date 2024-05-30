@@ -1,3 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
 #root{
   height: 100%;
 }
@@ -7,7 +12,3 @@ html, body {
   margin: 0;
   background-color: #FAFAFA;
 }
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
