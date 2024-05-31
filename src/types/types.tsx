@@ -3,4 +3,5 @@ export type ProductProps = {
   name: string;
   business: string[];
   regions: string[];
+  status: string;
 };

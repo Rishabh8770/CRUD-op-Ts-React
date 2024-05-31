@@ -32,7 +32,7 @@ app.get("/products", (_req, res) => {
 });
 
 app.post("/products", (req, res) => {
-  const newProduct: ProductProps = req.body;
+  const newProduct: ProductProps = {...req.body, status: "pending"};
   if (!newProduct || !newProduct.id || !newProduct.name) {
     return res.status(400).json({ error: "Invalid product data" });
   }
@@ -44,7 +44,7 @@ app.post("/products", (req, res) => {
 
 app.put("/products/:id", (req, res) => {
   const { id } = req.params;
-  const updatedProduct: ProductProps = req.body;
+  const updatedProduct: ProductProps = {...req.body, status: "pending"};
   let items = readData();
   items = items.map((item) => (item.id === id ? updatedProduct : item));
   writeData(items);
@@ -53,10 +53,40 @@ app.put("/products/:id", (req, res) => {
 
 app.delete("/products/:id", (req, res) => {
   const { id } = req.params;
-  let items = readData();
-  items = items.filter((item) => item.id !== id);
-  writeData(items);
-  res.status(204).end();
+  const items = readData();
+  const productIndex = items.findIndex((item) => item.id === id);
+  if(productIndex !== -1){
+    items[productIndex].status = "pending"
+    writeData(items);
+    res.json(items[productIndex])
+  }else{
+    res.status(404).json("product not found")
+  }
+});
+app.put("/products/:id/approve", (req, res) => {
+  const { id } = req.params;
+  const items = readData();
+  const productIndex = items.findIndex((item) => item.id === id);
+  if(productIndex !== -1){
+    items[productIndex].status = "active"
+    writeData(items);
+    res.json(items[productIndex])
+  }else{
+    res.status(404).json("product not found")
+  }
+});
+
+app.put("/products/:id/reject", (req, res) => {
+  const { id } = req.params;
+  const items = readData();
+  const productIndex = items.findIndex((item) => item.id === id);
+  if(productIndex !== -1){
+    items[productIndex].status = "rejected"
+    writeData(items);
+    res.json(items[productIndex])
+  }else{
+    res.status(404).json("product not found")
+  }
 });
 
 app.listen(port, () => {

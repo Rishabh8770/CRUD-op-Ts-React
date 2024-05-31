@@ -103,6 +103,7 @@ export function ProductDisplay({ onSubmit, title }: ButtonProps) {
                 name: "",
                 business: product.business || [],
                 regions: product.regions || [],
+                status: product.status
               }
             }
             editMode={true}
@@ -117,6 +118,7 @@ export function ProductDisplay({ onSubmit, title }: ButtonProps) {
             withLink={false}
             isDelete={false}
             deleteProduct={deleteProduct}
+            status={product.status}
           />
           <div className="m-3">
             <Button onClick={handleShowModal}>

@@ -73,6 +73,7 @@ export function Home() {
   const regionOptions: string[] = [
     ...new Set(products.filter(Boolean).flatMap((product) => product.regions)),
   ]; 
+  
   return (
     <div>
       <div className="d-flex align-items-center justify-content-center">
@@ -123,6 +124,7 @@ export function Home() {
                 withLink
                 deleteProduct={handleDelete}
                 isDelete
+                status={product.status}
               />
             </div>
           ))

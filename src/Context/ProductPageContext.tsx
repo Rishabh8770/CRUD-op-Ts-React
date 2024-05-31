@@ -9,6 +9,8 @@ type ProductContextType = {
   deleteProduct: (productId: string) => void;
   updateProduct: (updatedProduct: ProductProps) => void;
   fetchProducts: () => void;
+  approveProduct:(productId: string) => void;
+  rejectProduct:(productId: string) => void;
 };
 
 type ProductContextProviderProps = {
@@ -93,12 +95,33 @@ export function ProductProvider({ children }: ProductContextProviderProps) {
     }
   };
 
+  const approveProduct = async (productId: string) => {
+    try{
+      const response = await axios.put(`${baseUrl}/products/${productId}/approve`);
+      const updatedProduct = response.data;
+      setProducts((prevProduct) => prevProduct.map((product) => product.id === productId ? updatedProduct : product))
+    }catch(error){
+      console.error("Error approving product", error)
+    }
+  }
+  const rejectProduct = async (productId: string) => {
+    try{
+      const response = await axios.put(`${baseUrl}/products/${productId}/reject`);
+      const updatedProduct = response.data;
+      setProducts((prevProduct) => prevProduct.map((product) => product.id === productId ? updatedProduct : product))
+    }catch(error){
+      console.error("Error approving product", error)
+    }
+  }
+
   const contextValue: ProductContextType = {
     products,
     addProduct,
     deleteProduct,
     updateProduct,
     fetchProducts,
+    approveProduct,
+    rejectProduct,
   };
 
   return (
