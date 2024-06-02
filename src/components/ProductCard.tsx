@@ -2,6 +2,7 @@ import { Trash2 } from "lucide-react";
 import Card from "react-bootstrap/Card";
 import { Link } from "react-router-dom";
 import { notifyDeleteProduct } from "../utils/NotificationUtils";
+import { ProductStatus } from "../types/types";
 
 type ProductListProps = {
   id: string;
@@ -11,6 +12,7 @@ type ProductListProps = {
   withLink: boolean;
   deleteProduct: (id: string) => void;
   isDelete: boolean;
+  status: ProductStatus
 };
 
 export function ProductCard({
@@ -18,6 +20,7 @@ export function ProductCard({
   name,
   business,
   regions,
+  status,
   withLink = true,
   isDelete = true,
   deleteProduct,
@@ -37,9 +40,22 @@ export function ProductCard({
               <strong>Business :</strong> {business.join(", ")}
             </Card.Text>
           </div>
-          <div>
+          <div className="h-16">
             <Card.Text>
               <strong>Regions :</strong> {regions.join(", ")}
+            </Card.Text>
+          </div>
+          <div>
+            <Card.Text>
+              <strong><p className={`absolute bottom-3 text-xl p-1 ${
+              status === "pending"
+                ? "text-gray-500 bg-gray-200"
+                : status === "active"
+                ? "text-green-500 bg-green-100"
+                : status === "rejected"
+                ? "text-red-500 bg-red-100"
+                : "no status"
+            }`}>{status}</p></strong>
             </Card.Text>
           </div>
         </div>

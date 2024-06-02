@@ -123,6 +123,7 @@ export function Home() {
                 withLink
                 deleteProduct={handleDelete}
                 isDelete
+                status={product.status}
               />
             </div>
           ))

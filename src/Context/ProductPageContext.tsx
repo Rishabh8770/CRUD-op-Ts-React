@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { ProductProps } from "../types/types";
+import { ProductProps, ProductStatus } from "../types/types";
 import axios from "axios";
 import { baseUrl } from "../config";
 
@@ -9,6 +9,7 @@ type ProductContextType = {
   deleteProduct: (productId: string) => void;
   updateProduct: (updatedProduct: ProductProps) => void;
   fetchProducts: () => void;
+  updateStatus: (productId: string, status: ProductStatus) => void;
 };
 
 type ProductContextProviderProps = {
@@ -93,12 +94,30 @@ export function ProductProvider({ children }: ProductContextProviderProps) {
     }
   };
 
+  const updateStatus = async (productId: string, status: ProductStatus) => {
+    try {
+      const product = products.find((p) => p.id === productId);
+      if (product) {
+        product.status = status;
+        await axios.put(`${baseUrl}/products/${productId}`, product);
+        setProducts((prevProducts) =>
+          prevProducts.map((p) =>
+            p.id === productId ? { ...p, status } : p
+          )
+        );
+      }
+    } catch (error) {
+      console.error("Error updating status:", error);
+    }
+  };
+
   const contextValue: ProductContextType = {
     products,
     addProduct,
     deleteProduct,
     updateProduct,
     fetchProducts,
+    updateStatus
   };
 
   return (

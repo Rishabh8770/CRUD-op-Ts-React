@@ -3,4 +3,7 @@ export type ProductProps = {
   name: string;
   business: string[];
   regions: string[];
+  status: ProductStatus;
 };
+
+export type ProductStatus = 'pending' | 'active' | 'rejected';

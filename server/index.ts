@@ -3,12 +3,11 @@ import cors from "cors";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import { ProductProps } from "../src/types/types";
+import { ProductProps, ProductStatus } from "../src/types/types";
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Use `import.meta.url` to get the directory name
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -36,6 +35,7 @@ app.post("/products", (req, res) => {
   if (!newProduct || !newProduct.id || !newProduct.name) {
     return res.status(400).json({ error: "Invalid product data" });
   }
+  newProduct.status = 'pending';
   const items = readData();
   items.push(newProduct);
   writeData(items);
