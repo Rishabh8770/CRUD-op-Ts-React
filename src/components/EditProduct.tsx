@@ -103,6 +103,7 @@ export function ProductDisplay({ onSubmit, title }: ButtonProps) {
                 name: "",
                 business: product.business || [],
                 regions: product.regions || [],
+                status: product.status
               }
             }
             editMode={true}
@@ -114,6 +115,7 @@ export function ProductDisplay({ onSubmit, title }: ButtonProps) {
             name={product.name}
             business={product.business}
             regions={product.regions}
+            status={product.status}
             withLink={false}
             isDelete={false}
             deleteProduct={deleteProduct}

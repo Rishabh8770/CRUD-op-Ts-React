@@ -3,7 +3,7 @@ import cors from "cors";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import { ProductProps, ProductStatus } from "../src/types/types";
+import { ProductProps } from "../src/types/types";
 
 const app = express();
 const port = process.env.PORT || 3000;

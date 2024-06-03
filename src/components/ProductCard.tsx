@@ -69,7 +69,7 @@ export function ProductCard({
     </Card>
   );
 
-  if (withLink) {
+  if (withLink || status === "pending" || status === "active") {
     return (
       <div key={id} className="m-3">
         <Link to={`/product/${id}`} style={{ textDecoration: "none" }}>

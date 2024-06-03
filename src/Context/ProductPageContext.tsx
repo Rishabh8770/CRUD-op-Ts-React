@@ -35,8 +35,9 @@ export function ProductProvider({ children }: ProductContextProviderProps) {
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get(`${baseUrl}/products`);
-      setProducts(response.data);
+      const response = await axios.get<ProductProps[]>(`${baseUrl}/products`);
+      const filteredProducts = response.data.filter((product: ProductProps) => product.status !== "delete_pending");
+      setProducts(filteredProducts);
     } catch (error) {
       console.error("Error fetching products:", error);
     }
@@ -65,12 +66,13 @@ export function ProductProvider({ children }: ProductContextProviderProps) {
   };
 
   // Delete product Method
-  const deleteProduct = (productId: string) => {
+  const deleteProduct = async (productId: string) => {
     try {
-      axios.delete(`${baseUrl}/products/${productId}`);
-      setProducts((prevProducts) =>
-        prevProducts.filter((product) => product.id !== productId)
-      );
+      // Update status to "delete_pending" first
+      await updateStatus(productId, "delete_pending");
+      // After status update is complete, delete the product
+      await axios.delete(`${baseUrl}/products/${productId}`);
+      
     } catch (error) {
       console.error("Error deleting the product", error);
     }

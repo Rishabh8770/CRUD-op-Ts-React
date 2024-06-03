@@ -19,7 +19,7 @@ type NotifyDeleteProps = {
 };
 
 export const notifyAddProduct = () => {
-  toast.success("Product added successfully!", options);
+  toast.success("Product added and waiting for status update", options);
 };
 
 export const notifyErrorAddingProduct = () => {
@@ -94,3 +94,4 @@ export const notifyDeleteProduct = (
 export const notifyDeletionError = () => {
   toast.error("Error deleting a product", options);
 };
+
