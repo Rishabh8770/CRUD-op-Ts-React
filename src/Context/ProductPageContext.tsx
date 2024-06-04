@@ -9,7 +9,8 @@ type ProductContextType = {
   deleteProduct: (productId: string) => void;
   updateProduct: (updatedProduct: ProductProps) => void;
   fetchProducts: () => void;
-  updateStatus: (productId: string, status: ProductStatus) => void;
+  approveProduct:(productId: string, status: "active") => void;
+  rejectProduct:(productId: string, status: "rejected") => void;
 };
 
 type ProductContextProviderProps = {
@@ -65,9 +66,9 @@ export function ProductProvider({ children }: ProductContextProviderProps) {
   };
 
   // Delete product Method
-  const deleteProduct = (productId: string) => {
+  const deleteProduct = async (productId: string) => {
     try {
-      axios.delete(`${baseUrl}/products/${productId}`);
+      await axios.delete(`${baseUrl}/products/${productId}`);
       setProducts((prevProducts) =>
         prevProducts.filter((product) => product.id !== productId)
       );
@@ -94,20 +95,29 @@ export function ProductProvider({ children }: ProductContextProviderProps) {
     }
   };
 
-  const updateStatus = async (productId: string, status: ProductStatus) => {
+  const approveProduct = async (productId: string, status: "active") => {
     try {
-      const product = products.find((p) => p.id === productId);
-      if (product) {
-        product.status = status;
-        await axios.put(`${baseUrl}/products/${productId}`, product);
-        setProducts((prevProducts) =>
-          prevProducts.map((p) =>
-            p.id === productId ? { ...p, status } : p
-          )
-        );
-      }
+      await axios.put(`${baseUrl}/products/${productId}/approve`, { status });
+      setProducts((prevProducts) =>
+        prevProducts.map((product) =>
+          product.id === productId ? { ...product, status } : product
+        )
+      );
     } catch (error) {
-      console.error("Error updating status:", error);
+      console.error("Error approving product", error);
+    }
+  };
+
+  const rejectProduct = async (productId: string, status: "rejected") => {
+    try {
+      await axios.put(`${baseUrl}/products/${productId}/reject`, { status });
+      setProducts((prevProducts) =>
+        prevProducts.map((product) =>
+          product.id === productId ? { ...product, status } : product
+        )
+      );
+    } catch (error) {
+      console.error("Error rejecting product", error);
     }
   };
 
@@ -117,7 +127,8 @@ export function ProductProvider({ children }: ProductContextProviderProps) {
     deleteProduct,
     updateProduct,
     fetchProducts,
-    updateStatus
+    approveProduct,
+    rejectProduct,
   };
 
   return (
