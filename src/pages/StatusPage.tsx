@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
 import { useProductContext } from "../Context/ProductPageContext";
-import { ProductProps } from "../types/types"; // Adjust the import path as necessary
+import { ProductProps } from "../types/types";
 import { MultiSelectDropdown, Option } from "../components/MultiSelectDropdown";
 
 export function StatusPage() {
@@ -18,11 +18,10 @@ export function StatusPage() {
     status: "active"
   ) => {
     try {
-      await approveProduct(productId, status); // Update status
-      const updatedProducts = products.map((product) =>
-        product.id === productId ? { ...product, status } : product
+      await approveProduct(productId, status);
+      setStatusData((prevStatusData) =>
+        prevStatusData.filter((product) => product.id !== productId)
       );
-      setStatusData(updatedProducts); // Update status data
     } catch (error) {
       console.error("Error updating product status:", error);
     }
@@ -33,11 +32,10 @@ export function StatusPage() {
     status: "rejected"
   ) => {
     try {
-      await rejectProduct(productId, status); // Update status
-      const updatedProducts = products.map((product) =>
-        product.id === productId ? { ...product, status } : product
+      await rejectProduct(productId, status);
+      setStatusData((prevStatusData) =>
+        prevStatusData.filter((product) => product.id !== productId)
       );
-      setStatusData(updatedProducts); // Update status data
     } catch (error) {
       console.error("Error updating product status:", error);
     }
@@ -48,14 +46,16 @@ export function StatusPage() {
   };
 
   const filteredProducts = selectedStatusFilters && selectedStatusFilters.length > 0
-    ? statusData.filter(product => selectedStatusFilters.some(filter => filter.value === product.status))
-    : statusData;
+  ? statusData.filter(product => selectedStatusFilters.some(filter => filter.value === product.status))
+  : statusData;
+
 
   return (
     <div className="flex justify-center flex-col">
-      <div className="mb-4 w-full flex justify-center">
+      <div className="mb-4 w-full flex justify-center items-center">
+        <p className="mx-2">Filter Status :</p>
         <MultiSelectDropdown
-          options={['active', 'pending', 'rejected', 'delete_pending']}
+          options={['active', 'pending', 'rejected', 'delete_pending', 'deleted']}
           placeholder="Select Status"
           onChange={handleStatusFilterChange}
           value={selectedStatusFilters}
@@ -76,8 +76,8 @@ export function StatusPage() {
               <td className="py-2 px-4 border-b border-gray-200 text-center">{product.status}</td>
               <td className="py-2 px-4 border-b border-gray-200 text-center">
                 <div className="inline-flex">
-                  <Button variant="outline-primary" disabled={product.status === "active" || product.status === "rejected"} className="mr-2" onClick={() => handleApproveStatusChange(product.id, 'active')}>Approve</Button>
-                  <Button variant="outline-danger" disabled={product.status === "active" || product.status === "rejected"} onClick={() => handleRejectStatusChange(product.id, 'rejected')}>Reject</Button>
+                  <Button variant="outline-primary" disabled={product.status === "active" || product.status === "rejected" || product.status === "deleted"} className="mr-2" onClick={() => handleApproveStatusChange(product.id, 'active')}>Approve</Button>
+                  <Button variant="outline-danger" disabled={product.status === "active" || product.status === "rejected" || product.status === "deleted"} onClick={() => handleRejectStatusChange(product.id, 'rejected')}>Reject</Button>
                 </div>
               </td>
             </tr>
