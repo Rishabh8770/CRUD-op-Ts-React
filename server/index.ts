@@ -3,11 +3,12 @@ import cors from "cors";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import { ProductProps, ProductStatus } from "../src/types/types";
+import { ProductProps } from "../src/types/types";
 
 const app = express();
 const port = process.env.PORT || 3000;
 
+// Use `import.meta.url` to get the directory name
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -31,11 +32,10 @@ app.get("/products", (_req, res) => {
 });
 
 app.post("/products", (req, res) => {
-  const newProduct: ProductProps = req.body;
+  const newProduct: ProductProps = {...req.body, status: "pending"};
   if (!newProduct || !newProduct.id || !newProduct.name) {
     return res.status(400).json({ error: "Invalid product data" });
   }
-  newProduct.status = 'pending';
   const items = readData();
   items.push(newProduct);
   writeData(items);
@@ -44,7 +44,7 @@ app.post("/products", (req, res) => {
 
 app.put("/products/:id", (req, res) => {
   const { id } = req.params;
-  const updatedProduct: ProductProps = req.body;
+  const updatedProduct: ProductProps = {...req.body, status: "pending"};
   let items = readData();
   items = items.map((item) => (item.id === id ? updatedProduct : item));
   writeData(items);
@@ -54,9 +54,39 @@ app.put("/products/:id", (req, res) => {
 app.delete("/products/:id", (req, res) => {
   const { id } = req.params;
   let items = readData();
-  items = items.filter((item) => item.id !== id);
-  writeData(items);
-  res.status(204).end();
+  const productIndex = items.findIndex((item) => item.id === id);
+  if (productIndex !== -1) {
+    items.splice(productIndex, 1);
+    writeData(items);
+    res.json({ message: "Product deleted successfully" });
+  } else {
+    res.status(404).json({ error: "Product not found" });
+  }
+});
+app.put("/products/:id/approve", (req, res) => {
+  const { id } = req.params;
+  const items = readData();
+  const productIndex = items.findIndex((item) => item.id === id);
+  if (productIndex !== -1) {
+    items[productIndex].status = "active";
+    writeData(items);
+    res.json(items[productIndex]);
+  } else {
+    res.status(404).json("Product not found");
+  }
+});
+
+app.put("/products/:id/reject", (req, res) => {
+  const { id } = req.params;
+  const items = readData();
+  const productIndex = items.findIndex((item) => item.id === id);
+  if (productIndex !== -1) {
+    items[productIndex].status = "rejected";
+    writeData(items);
+    res.json(items[productIndex]);
+  } else {
+    res.status(404).json("Product not found");
+  }
 });
 
 app.listen(port, () => {

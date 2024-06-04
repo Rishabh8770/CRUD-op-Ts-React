@@ -1,21 +1,66 @@
-import { Button } from 'react-bootstrap';
-import { useProductContext } from '../Context/ProductPageContext';
-
+import { useEffect, useState } from "react";
+import { Button } from "react-bootstrap";
+import { useProductContext } from "../Context/ProductPageContext";
+import { ProductProps } from "../types/types"; // Adjust the import path as necessary
+import { MultiSelectDropdown, Option } from "../components/MultiSelectDropdown";
 
 export function StatusPage() {
-    const { products, updateStatus, deleteProduct } = useProductContext();
+  const { products, approveProduct, rejectProduct } = useProductContext();
+  const [selectedStatusFilters, setSelectedStatusFilters] = useState<Option[] | null>(null);
+  const [statusData, setStatusData] = useState<ProductProps[]>(products);
 
-    const handleStatusChange = (productId: string, status: 'active' | 'rejected') => {
-      updateStatus(productId, status);
-    };
-  
-  /*   const handleDelete = (productId: string) => {
-      deleteProduct(productId);
-    };
-   */
+  useEffect(() => {
+    setStatusData(products);
+  }, [products]);
+
+  const handleApproveStatusChange = async (
+    productId: string,
+    status: "active"
+  ) => {
+    try {
+      await approveProduct(productId, status); // Update status
+      const updatedProducts = products.map((product) =>
+        product.id === productId ? { ...product, status } : product
+      );
+      setStatusData(updatedProducts); // Update status data
+    } catch (error) {
+      console.error("Error updating product status:", error);
+    }
+  };
+
+  const handleRejectStatusChange = async (
+    productId: string,
+    status: "rejected"
+  ) => {
+    try {
+      await rejectProduct(productId, status); // Update status
+      const updatedProducts = products.map((product) =>
+        product.id === productId ? { ...product, status } : product
+      );
+      setStatusData(updatedProducts); // Update status data
+    } catch (error) {
+      console.error("Error updating product status:", error);
+    }
+  };
+
+  const handleStatusFilterChange = (selectedOptions: Option[] | null) => {
+    setSelectedStatusFilters(selectedOptions);
+  };
+
+  const filteredProducts = selectedStatusFilters && selectedStatusFilters.length > 0
+    ? statusData.filter(product => selectedStatusFilters.some(filter => filter.value === product.status))
+    : statusData;
 
   return (
-    <div className="flex justify-center">
+    <div className="flex justify-center flex-col">
+      <div className="mb-4 w-full flex justify-center">
+        <MultiSelectDropdown
+          options={['active', 'pending', 'rejected', 'delete_pending']}
+          placeholder="Select Status"
+          onChange={handleStatusFilterChange}
+          value={selectedStatusFilters}
+        />
+      </div>
       <table className="min-w-full bg-white border border-gray-200">
         <thead>
           <tr>
@@ -25,14 +70,14 @@ export function StatusPage() {
           </tr>
         </thead>
         <tbody>
-          {products.map((product) => (
+          {filteredProducts.map((product) => (
             <tr key={product.id}>
               <td className="py-2 px-4 border-b border-gray-200 text-center">{product.name}</td>
               <td className="py-2 px-4 border-b border-gray-200 text-center">{product.status}</td>
               <td className="py-2 px-4 border-b border-gray-200 text-center">
                 <div className="inline-flex">
-                  <Button variant="outline-primary" className="mr-2" onClick={() => handleStatusChange(product.id, 'active')}>Approve</Button>
-                  <Button variant="outline-danger" onClick={() => handleStatusChange(product.id, 'rejected')}>Reject</Button>
+                  <Button variant="outline-primary" disabled={product.status === "active" || product.status === "rejected"} className="mr-2" onClick={() => handleApproveStatusChange(product.id, 'active')}>Approve</Button>
+                  <Button variant="outline-danger" disabled={product.status === "active" || product.status === "rejected"} onClick={() => handleRejectStatusChange(product.id, 'rejected')}>Reject</Button>
                 </div>
               </td>
             </tr>
@@ -42,6 +87,3 @@ export function StatusPage() {
     </div>
   );
 }
-
-
-

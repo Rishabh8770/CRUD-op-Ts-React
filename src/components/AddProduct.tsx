@@ -25,6 +25,7 @@ export function AddProduct({ title }: ButtonProps) {
     name: "",
     business: [],
     regions: [],
+    status: "pending"
   });
 
   const { addProduct } = useProductContext();
@@ -72,6 +73,7 @@ export function AddProduct({ title }: ButtonProps) {
         name: "",
         business: [],
         regions: [],
+        status: newProduct.status
       });
       notifyAddProduct();
       handleClose();

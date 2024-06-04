@@ -34,6 +34,8 @@ export function Home() {
   const applyFilterAndSort = (product: ProductProps) => {
     if (!product) return false;
 
+    if(product.status === "rejected") return false;
+
     if (searchProduct && !product.name.toLowerCase().includes(searchProduct.toLowerCase())) {
       return false;
     }
@@ -73,6 +75,7 @@ export function Home() {
   const regionOptions: string[] = [
     ...new Set(products.filter(Boolean).flatMap((product) => product.regions)),
   ]; 
+  
   return (
     <div>
       <div className="d-flex align-items-center justify-content-center">
