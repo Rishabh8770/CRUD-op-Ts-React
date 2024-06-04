@@ -19,8 +19,6 @@ const deletedDataFilePath = path.join(__dirname, "deletedProductData.json");
 app.use(cors());
 app.use(express.json());
 
-
-
 const readData = (filePath: string): ProductProps[] => {
   const data = fs.readFileSync(filePath, "utf8");
   return JSON.parse(data);
@@ -41,7 +39,7 @@ const initializeProductStatus = (filePath: string): void => {
   writeData(filePath, updatedItems);
 };
 
-initializeProductStatus(dataFilePath)
+initializeProductStatus(dataFilePath);
 
 app.get("/products", (_req, res) => {
   const items = readData(dataFilePath);
@@ -67,18 +65,37 @@ app.post("/products", (req, res) => {
 app.put("/products/:id", (req, res) => {
   const { id } = req.params;
   const updatedProduct: ProductProps = { ...req.body, status: "pending" };
-  let items = readData(dataFilePath);
-  items = items.map((item) => (item.id === id ? updatedProduct : item));
-  writeData(dataFilePath, items);
-  res.json(updatedProduct);
+  const items = readData(dataFilePath);
+  const productIndex = items.findIndex((item) => item.id === id);
+
+  if (productIndex !== -1) {
+    items[productIndex] = updatedProduct;
+    writeData(dataFilePath, items);
+    res.json(updatedProduct);
+  } else {
+    const deletedItems = readData(deletedDataFilePath);
+    const deletedProductIndex = deletedItems.findIndex((item) => item.id === id);
+
+    if (deletedProductIndex !== -1) {
+      deletedItems[deletedProductIndex] = updatedProduct;
+      writeData(deletedDataFilePath, deletedItems);
+      res.json(updatedProduct);
+    } else {
+      res.status(404).json({ error: "Product not found" });
+    }
+  }
 });
+
 
 app.delete("/products/:id", (req, res) => {
   const { id } = req.params;
   const items = readData(dataFilePath);
   const productIndex = items.findIndex((item) => item.id === id);
   if (productIndex !== -1) {
-    const deletedProduct: ProductProps = { ...items[productIndex], status: "delete_pending" };
+    const deletedProduct: ProductProps = {
+      ...items[productIndex],
+      status: "delete_pending",
+    };
     items.splice(productIndex, 1);
     writeData(dataFilePath, items);
 
@@ -93,7 +110,11 @@ app.delete("/products/:id", (req, res) => {
 });
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const updateStatus = (id: string, status: "active" | "rejected" | "deleted", res: Response) => {
+const updateStatus = (
+  id: string,
+  status: "active" | "rejected" | "deleted",
+  res: Response
+) => {
   const items = readData(dataFilePath);
   let productIndex = items.findIndex((item) => item.id === id);
   if (productIndex !== -1) {
