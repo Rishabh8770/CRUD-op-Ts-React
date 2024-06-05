@@ -74,7 +74,9 @@ app.put("/products/:id", (req, res) => {
     res.json(updatedProduct);
   } else {
     const deletedItems = readData(deletedDataFilePath);
-    const deletedProductIndex = deletedItems.findIndex((item) => item.id === id);
+    const deletedProductIndex = deletedItems.findIndex(
+      (item) => item.id === id
+    );
 
     if (deletedProductIndex !== -1) {
       deletedItems[deletedProductIndex] = updatedProduct;
@@ -85,7 +87,6 @@ app.put("/products/:id", (req, res) => {
     }
   }
 });
-
 
 app.delete("/products/:id", (req, res) => {
   const { id } = req.params;
@@ -112,24 +113,39 @@ app.delete("/products/:id", (req, res) => {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const updateStatus = (
   id: string,
-  status: "active" | "rejected" | "deleted",
+  status: "active" | "rejected" | "delete_pending" | "deleted",
   res: Response
 ) => {
   const items = readData(dataFilePath);
-  let productIndex = items.findIndex((item) => item.id === id);
-  if (productIndex !== -1) {
-    items[productIndex].status = status;
-    writeData(dataFilePath, items);
-    return res.json(items[productIndex]);
-  } else {
-    const deletedItems = readData(deletedDataFilePath);
-    productIndex = deletedItems.findIndex((item) => item.id === id);
-    if (productIndex !== -1) {
-      deletedItems[productIndex].status = status;
+  const deletedItems = readData(deletedDataFilePath);
+  const productIndex = items.findIndex((item) => item.id === id);
+  const deletedProductIndex = deletedItems.findIndex((item) => item.id === id);
+
+  if (status === "delete_pending") {
+    if (items[productIndex]?.status === "delete_pending") {
+      items[productIndex].status = "delete_approval_pending";
+      writeData(dataFilePath, items);
+      return res.json(items[productIndex]);
+    } else if (items[productIndex]?.status === "delete_approval_pending") {
+      deletedItems[deletedProductIndex].status = "deleted";
       writeData(deletedDataFilePath, deletedItems);
-      return res.json(deletedItems[productIndex]);
+      items.splice(productIndex, 1);
+      writeData(dataFilePath, items);
+      return res.json(deletedItems[deletedProductIndex]);
+    }
+  } else {
+    // Handle other status transitions as before
+    if (productIndex !== -1) {
+      items[productIndex].status = status;
+      writeData(dataFilePath, items);
+      return res.json(items[productIndex]);
+    } else if (deletedProductIndex !== -1) {
+      deletedItems[deletedProductIndex].status = status;
+      writeData(deletedDataFilePath, deletedItems);
+      return res.json(deletedItems[deletedProductIndex]);
     }
   }
+
   return res.status(404).json("Product not found");
 };
 
@@ -137,13 +153,18 @@ app.put("/products/:id/approve", (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
 
-  if (status === "approval_pending" || status === "active" || status === "deleted") {
+  if (
+    status === "approval_pending" ||
+    status === "active" ||
+    status === "deleted"
+  ) {
     updateStatus(id, status, res);
+  } else if (status === "delete_approval_pending") {
+    updateStatus(id, "deleted", res);
   } else {
     res.status(400).json({ error: "Invalid status update" });
   }
 });
-
 
 app.put("/products/:id/reject", (req, res) => {
   const { id } = req.params;

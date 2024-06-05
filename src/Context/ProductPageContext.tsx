@@ -95,14 +95,24 @@ export function ProductProvider({ children }: ProductContextProviderProps) {
     try {
       const product = products.find((product) => product.id === productId);
       if (!product) throw new Error("Product not found");
-
+  
       let newStatus = product.status;
       if (step === "step1") {
-        newStatus = "approval_pending";
+        if (product.status === "delete_pending") {
+          newStatus = "delete_approval_pending";
+        } else {
+          newStatus = "approval_pending";
+        }
       } else if (step === "step2") {
-        newStatus = product.status === "delete_pending" ? "deleted" : "active";
+        if (product.status === "delete_approval_pending") {
+          newStatus = "deleted";
+        } else if (product.status === "delete_pending") {
+          newStatus = "delete_approval_pending";
+        } else {
+          newStatus = "active";
+        }
       }
-
+  
       await axios.put(`${baseUrl}/products/${productId}/approve`, { status: newStatus });
       setProducts((prevProducts) =>
         prevProducts.map((product) =>
@@ -113,7 +123,7 @@ export function ProductProvider({ children }: ProductContextProviderProps) {
       console.error("Error approving product", error);
     }
   };
-
+  
   const rejectProduct = async (productId: string, status: "rejected") => {
     try {
       await axios.put(`${baseUrl}/products/${productId}/reject`, { status });

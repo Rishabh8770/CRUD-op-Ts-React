@@ -6,4 +6,11 @@ export type ProductProps = {
   status: ProductStatus;
 };
 
-export type ProductStatus = 'pending' | 'active' | 'rejected'|'delete_pending'| 'deleted'| 'approval_pending';
+export type ProductStatus =
+  | "pending"
+  | "active"
+  | "rejected"
+  | "delete_pending"
+  | "deleted"
+  | "approval_pending"
+  | "delete_approval_pending";

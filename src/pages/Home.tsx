@@ -48,7 +48,6 @@ export function Home() {
       return false;
     }
 
-    // If all conditions pass, return true
     return true;
   };
 
