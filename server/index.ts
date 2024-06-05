@@ -135,10 +135,15 @@ const updateStatus = (
 
 app.put("/products/:id/approve", (req, res) => {
   const { id } = req.params;
-  const product = readData(deletedDataFilePath).find((item) => item.id === id);
-  const status = product?.status === "delete_pending" ? "deleted" : "active";
-  updateStatus(id, status, res);
+  const { status } = req.body;
+
+  if (status === "approval_pending" || status === "active" || status === "deleted") {
+    updateStatus(id, status, res);
+  } else {
+    res.status(400).json({ error: "Invalid status update" });
+  }
 });
+
 
 app.put("/products/:id/reject", (req, res) => {
   const { id } = req.params;
