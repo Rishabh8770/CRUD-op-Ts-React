@@ -26,6 +26,7 @@ export function ProductCard({
 }: ProductListProps) {
   const handleDelete = (e: React.MouseEvent) => {
     e.preventDefault();
+
     notifyDeleteProduct({ id, name }, () => deleteProduct(id));
   };
 
@@ -46,15 +47,19 @@ export function ProductCard({
           </div>
           <div>
             <Card.Text>
-              <strong><p className={`absolute bottom-3 text-xl p-1 ${
-              status === "pending"
-                ? "text-gray-500 bg-gray-200"
-                : status === "active"
-                ? "text-green-500 bg-green-100"
-                : status === "rejected"
-                ? "text-red-500 bg-red-100"
-                : "no status"
-            }`}>{status}</p></strong>
+                <p
+                  className={`absolute bottom-1 text-sm p-1 ${
+                    status === "pending"
+                      ? "text-gray-500 bg-gray-200"
+                      : status === "active"
+                      ? "text-green-500 bg-green-100"
+                      : status === "rejected"
+                      ? "text-red-500 bg-red-100"
+                      : "no status"
+                  }`}
+                >
+                  {status}
+                </p>
             </Card.Text>
           </div>
         </div>

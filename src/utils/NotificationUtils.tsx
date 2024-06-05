@@ -19,7 +19,7 @@ type NotifyDeleteProps = {
 };
 
 export const notifyAddProduct = () => {
-  toast.success("Product added successfully!", options);
+  toast.success("Product has been added and waiting for approval!", options);
 };
 
 export const notifyErrorAddingProduct = () => {

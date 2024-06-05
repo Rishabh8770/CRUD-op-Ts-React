@@ -34,7 +34,7 @@ export function Home() {
   const applyFilterAndSort = (product: ProductProps) => {
     if (!product) return false;
 
-    if(product.status === "rejected") return false;
+    if(product.status === "rejected" || product.status === "delete_pending" || product.status === "deleted") return false;
 
     if (searchProduct && !product.name.toLowerCase().includes(searchProduct.toLowerCase())) {
       return false;
@@ -53,7 +53,9 @@ export function Home() {
   };
 
   const handleDelete = (id:string) => {
-    deleteProduct(id)
+    
+        deleteProduct(id)
+    
   }
 
   const sortedAndFilteredProducts = products
