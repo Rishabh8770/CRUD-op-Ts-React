@@ -1,7 +1,5 @@
 import { useState } from "react";
-import { Button } from "react-bootstrap";
 import { v4 as uuidv4 } from "uuid";
-import { ProductModal } from "./ProductModal";
 import { ProductProps } from "../types/types";
 import { useProductContext } from "../Context/ProductPageContext";
 import { Option } from "./MultiSelectDropdown";
@@ -11,15 +9,15 @@ import {
   notifyMandatoryWarn,
 } from "../utils/NotificationUtils";
 import {NotificationContainer} from './UserFeedbacks'
+import AddAndEditForm from "./AddAndEditForm";
 
-type ButtonProps = {
-  title: string;
+/* type ButtonProps = {
+  // title: string;
   onSubmit: (newProduct: ProductProps) => void;
   product?: ProductProps;
-};
+}; */
 
-export function AddProduct({ title }: ButtonProps) {
-  const [showModal, setShowModal] = useState(false);
+export function AddProduct() {
   const [newProduct, setNewProduct] = useState<ProductProps>({
     id: uuidv4(),
     name: "",
@@ -29,8 +27,6 @@ export function AddProduct({ title }: ButtonProps) {
   });
 
   const { addProduct } = useProductContext();
-  const handleShow = () => setShowModal(true);
-  const handleClose = () => setShowModal(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -76,7 +72,6 @@ export function AddProduct({ title }: ButtonProps) {
         status: newProduct.status
       });
       notifyAddProduct();
-      handleClose();
     } catch (error) {
       notifyErrorAddingProduct();
       // handleClose();
@@ -87,14 +82,7 @@ export function AddProduct({ title }: ButtonProps) {
 
   return (
     <>
-      <div className="mx-3">
-        <Button variant="success" onClick={handleShow}>
-          {title}
-        </Button>
-      </div>
-      <ProductModal
-        showModal={showModal}
-        handleCloseModal={handleClose}
+      <AddAndEditForm
         handleInputChange={handleInputChange}
         handleSubmit={handleSubmit}
         title="Add Product"

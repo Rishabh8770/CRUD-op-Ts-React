@@ -1,19 +1,33 @@
 import { useState } from "react";
-import { AddProduct } from "../components/AddProduct";
 import { ProductCard } from "../components/ProductCard";
 import { ProductProps } from "../types/types";
 import { SortProduct, SortOptions } from "../components/SortProduct";
 import { useProductContext } from "../Context/ProductPageContext";
 import { SearchProduct } from "../components/SearchProduct";
 import { MultiSelectDropdown, Option } from "../components/MultiSelectDropdown";
+import { motion } from "framer-motion"; // Import framer-motion
+import { Button } from "react-bootstrap";
+import { Link } from "react-router-dom";
 
 export function Home() {
-  const { products, addProduct, deleteProduct } = useProductContext();
+  const { products, deleteProduct } = useProductContext();
 
   const [searchProduct, setSearchProduct] = useState("");
-  const [sortOption, setSortOption] =useState<SortOptions>("--please select--");
+  const [sortOption, setSortOption] = useState<SortOptions>("--please select--");
   const [selectBusinessOptions, setSelectBusinessOptions] = useState<Option[] | null>(null);
   const [selectRegionOptions, setSelectRegionOptions] = useState<Option[] | null>(null);
+  const [filter, setFilter] = useState<'active'|'non-active'>('active');
+  const [selectedStatusFilters, setSelectedStatusFilters] = useState<
+    Option[] | null
+  >(null);
+
+  const handleStatusFilterChange = (selectedOptions: Option[] | null) => {
+    setSelectedStatusFilters(selectedOptions);
+  };
+
+  const toggleFilter = () => {
+    setFilter(prevFilter => prevFilter === 'active'? 'non-active': 'active');
+  }
 
   const handleSelectBusinessFilterChange = (selectedOptions: Option[] | null) => {
     setSelectBusinessOptions(selectedOptions);
@@ -34,14 +48,19 @@ export function Home() {
   const applyFilterAndSort = (product: ProductProps) => {
     if (!product) return false;
 
-    if(product.status === "rejected" || product.status === "delete_pending" || product.status === "deleted") return false;
+    if(filter === 'active' && product.status !== 'active') return false;
+    if(filter==='non-active' && product.status === 'active') return false;
+
+    if (selectedStatusFilters && selectedStatusFilters.length > 0 && !selectedStatusFilters.some((option) => option.value === product.status)) {
+      return false;
+    }
 
     if (searchProduct && !product.name.toLowerCase().includes(searchProduct.toLowerCase())) {
       return false;
     }
 
     if (selectBusinessOptions && selectBusinessOptions.length > 0 && !selectBusinessOptions.every((option) => product.business.includes(option.value))) {
-        return false;
+      return false;
     }
 
     if (selectRegionOptions && selectRegionOptions.length > 0 && !selectRegionOptions.every((option) => product.regions.includes(option.value))) {
@@ -50,12 +69,6 @@ export function Home() {
 
     return true;
   };
-
-  const handleDelete = (id:string) => {
-    
-        deleteProduct(id)
-    
-  }
 
   const sortedAndFilteredProducts = products
     .filter(applyFilterAndSort)
@@ -70,18 +83,41 @@ export function Home() {
       return 0;
     });
 
+  const handleDelete = (id: string) => {
+    deleteProduct(id);
+  };
+
   const businessOptions: string[] = [
     ...new Set(products.filter(Boolean).flatMap((product) => product.business)),
-  ]; 
+  ];
   const regionOptions: string[] = [
     ...new Set(products.filter(Boolean).flatMap((product) => product.regions)),
-  ]; 
-  
+  ];
+
+  // Define animation variants
+  const containerVariants = {
+    hidden: { opacity: 1 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 50 },
+    visible: { opacity: 1, y: 0 },
+  };
+
   return (
     <div>
       <div className="d-flex align-items-center justify-content-center">
         <div className="">
-          <AddProduct onSubmit={addProduct} title="Add New Product" />
+          <Link to='/status'>
+            <Button variant="success"> Add New Product</Button>
+          </Link>
+          {/* <AddProduct onSubmit={addProduct} title="Add New Product" /> */}
         </div>
         <SortProduct onProductSort={handleProductSort} />
         <div className="d-flex m-2 align-items-center">
@@ -114,11 +150,31 @@ export function Home() {
             </div>
           </div>
         </div>
+        <div>
+          <Button onClick={toggleFilter}>Show {filter === 'active' ? 'Request List' : 'Active Products'}</Button>
+        </div>
+        <div className="mx-3">
+        {filter === 'non-active' ? (<MultiSelectDropdown
+            options={["rejected", "pending", "deleted"]}
+            placeholder="Filter by Status"
+            onChange={handleStatusFilterChange}
+            value={selectedStatusFilters}
+          />):('')}
+        </div>
       </div>
-      <div className="d-flex flex-wrap mt-4 justify-content-center">
+      <motion.div
+        className="d-flex flex-wrap mt-4 justify-content-center"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
         {sortedAndFilteredProducts.length > 0 ? (
           sortedAndFilteredProducts.map((product) => (
-            <div key={product.id} style={{ margin: "10px" }}>
+            <motion.div
+              key={product.id}
+              style={{ margin: "10px" }}
+              variants={itemVariants}
+            >
               <ProductCard
                 id={product.id}
                 name={product.name}
@@ -129,7 +185,7 @@ export function Home() {
                 isDelete
                 status={product.status}
               />
-            </div>
+            </motion.div>
           ))
         ) : (
           <div
@@ -139,7 +195,7 @@ export function Home() {
             <h4>No Card found</h4>
           </div>
         )}
-      </div>
+      </motion.div>
     </div>
   );
 }
