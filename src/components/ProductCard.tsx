@@ -31,44 +31,41 @@ export function ProductCard({
   };
 
   const cardContent = (
-    <Card className="w-[17rem] h-[17rem] overflow-y-hidden drop-shadow-xl">
-      <Card.Body>
-        <Card.Title>{name}</Card.Title>
-        <div className="d-flex flex-column">
+    <Card className="w-[17rem] h-[22rem] overflow-y-hidden drop-shadow-xl">
+      <Card.Body className="flex flex-col h-full">
+        <Card.Title className="underline">{name}</Card.Title>
+        <div className="d-flex flex-column flex-grow">
           <div className="my-4 h-16">
             <Card.Text>
               <strong>Business :</strong> {business.join(", ")}
             </Card.Text>
           </div>
-          <div>
+          <div className="h-20">
             <Card.Text>
               <strong>Regions :</strong> {regions.join(", ")}
             </Card.Text>
           </div>
-          <div>
-            <Card.Text>
-                <p
-                  className={`absolute bottom-1 text-sm p-1 ${
-                    status === "pending"
-                      ? "text-gray-500 bg-gray-200"
-                      : status === "active"
-                      ? "text-green-500 bg-green-100"
-                      : status === "rejected"
-                      ? "text-red-500 bg-red-100"
-                      : "no status"
-                  }`}
-                >
-                  {status}
-                </p>
-            </Card.Text>
-          </div>
         </div>
-        {isDelete && (
-          <Trash2
-            className="absolute bottom-3 right-3 cursor-pointer"
-            onClick={handleDelete}
-          />
-        )}
+        <div className="mb-4">
+          <Card.Text>
+            <p
+              className={`text-base p-2 mb-2 text-center ${
+                status === "pending"
+                  ? "text-gray-500 bg-gray-200"
+                  : status === "active"
+                  ? "text-green-500 bg-green-100"
+                  : status === "rejected"
+                  ? "text-red-500 bg-red-100"
+                  : "text-white bg-gray-700"
+              }`}
+            >
+              {status}
+            </p>
+          </Card.Text>
+        </div>
+        <div className="absolute bottom-3 right-2">
+          {isDelete && <Trash2 onClick={handleDelete} />}
+        </div>
       </Card.Body>
     </Card>
   );

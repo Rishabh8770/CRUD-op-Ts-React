@@ -97,7 +97,8 @@ export function StatusPage() {
                   <div className="inline-flex">
                     <Button
                       variant="outline-primary"
-                      disabled={["active", "rejected", "deleted"].includes(
+                      disabled={["active", "rejected", "deleted",  "approval_pending",
+                      "delete_approval_pending"].includes(
                         product.status
                       )}
                       className="mr-2"
@@ -105,11 +106,11 @@ export function StatusPage() {
                         handleApproveStepChange(product.id, "step1")
                       }
                     >
-                      Approve Step 1
+                      Approve-1
                     </Button>
                     <Button
                       variant="outline-primary"
-                      disabled={["active", "rejected", "deleted"].includes(
+                      disabled={["active", "rejected", "deleted", "pending", "delete_pending"].includes(
                         product.status
                       )}
                       className="mr-2"
@@ -117,7 +118,7 @@ export function StatusPage() {
                         handleApproveStepChange(product.id, "step2")
                       }
                     >
-                      Approve Step 2
+                      Approve-2
                     </Button>
                     <Button
                       variant="outline-danger"
