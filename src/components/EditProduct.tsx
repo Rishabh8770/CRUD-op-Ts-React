@@ -115,7 +115,6 @@ export function ProductDisplay({ onSubmit, title }: ButtonProps) {
             name={product.name}
             business={product.business}
             regions={product.regions}
-            withLink={false}
             isDelete={false}
             deleteProduct={deleteProduct}
             status={product.status}

@@ -47,25 +47,25 @@ function AddAndEditForm({
     <div className="container border rounded my-4">
       <label className="text-3xl my-3">{title}</label>
       {!editMode && (
-            <Form.Group controlId="productName">
-              <Form.Label>
-                Product Name<span className="text-danger">*</span>
-              </Form.Label>
-              <Form.Control
-                type="text"
-                name="name"
-                value={newProduct.name}
-                onChange={handleInputChange}
-              />
-            </Form.Group>
-          )}
+        <Form.Group controlId="productName">
+          <Form.Label>
+            Product Name<span className="text-danger">*</span>
+          </Form.Label>
+          <Form.Control
+            type="text"
+            name="name"
+            value={newProduct.name}
+            onChange={handleInputChange}
+          />
+        </Form.Group>
+      )}
       <Form.Group controlId="business">
         <Form.Label>
           Business<span className="text-danger">*</span>
         </Form.Label>
         <MultiSelectDropdown
-          options={businessOptions.map((business) => business.value)}
-          placeholder="Select Buisness"
+          options={businessOptions.map(business => business.value)}
+          placeholder="Select Business"
           onChange={handleBusinessChange}
           value={newProduct.business.map((business) => ({
             value: business,
@@ -78,7 +78,7 @@ function AddAndEditForm({
           Regions<span className="text-danger">*</span>
         </Form.Label>
         <MultiSelectDropdown
-          options={regionsOptions.map((region) => region.value)}
+          options={regionsOptions.map(region=> region.value)}
           placeholder="Select Regions"
           onChange={handleRegionsChange}
           value={newProduct.regions.map((region) => ({

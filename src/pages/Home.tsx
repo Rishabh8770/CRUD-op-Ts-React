@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { AddProduct } from "../components/AddProduct";
+import { ProductForm } from "../components/ProductForm";
 import { ProductCard } from "../components/ProductCard";
 import { ProductProps } from "../types/types";
 import { SortProduct, SortOptions } from "../components/SortProduct";
@@ -8,15 +8,17 @@ import { SearchProduct } from "../components/SearchProduct";
 import { MultiSelectDropdown, Option } from "../components/MultiSelectDropdown";
 import { Button } from "react-bootstrap";
 import { motion } from "framer-motion";
+import { useNavigate } from 'react-router-dom';
 
 export function Home() {
-  const { products, addProduct, deleteProduct } = useProductContext();
-
-  const [searchProduct, setSearchProduct] = useState("");
+  const { products, addProduct, updateProduct, deleteProduct } = useProductContext();
+  const [selectedProduct, setSelectedProduct] = useState<ProductProps | null>(null);
   const [sortOption, setSortOption] =useState<SortOptions>("--please select--");
   const [selectBusinessOptions, setSelectBusinessOptions] = useState<Option[] | null>(null);
   const [selectRegionOptions, setSelectRegionOptions] = useState<Option[] | null>(null);
   const [filter, setFilter] = useState<'active'|'non-active'>('active')
+  const [searchProduct, setSearchProduct] = useState("");
+  const navigate = useNavigate();
 
   const handleSelectBusinessFilterChange = (selectedOptions: Option[] | null) => {
     setSelectBusinessOptions(selectedOptions);
@@ -32,6 +34,27 @@ export function Home() {
 
   const handleProductSort = (sortProduct: SortOptions) => {
     setSortOption(sortProduct);
+  };
+
+  const handleDelete = (id: string) => {
+    deleteProduct(id);
+  };
+
+  const handleEdit = (id: string) => {
+    const productToEdit = products.find(product => product.id === id);
+    if (productToEdit) {
+      setSelectedProduct(productToEdit);
+      navigate(`/status?edit=${id}`); // Navigate to StatusPage with edit query
+    }
+  };
+
+  const handleSubmit = (product: ProductProps) => {
+    if (selectedProduct) {
+      updateProduct(product);
+    } else {
+      addProduct(product);
+    }
+    setSelectedProduct(null);
   };
 
   const toggleFilter = () => {
@@ -59,11 +82,6 @@ export function Home() {
     return true;
   };
 
-  const handleDelete = (id:string) => {
-    
-        deleteProduct(id)
-    
-  }
 
   const sortedAndFilteredProducts = products
     .filter(applyFilterAndSort)
@@ -78,46 +96,39 @@ export function Home() {
       return 0;
     });
 
-    const containerVariants = {
-      hidden: { opacity: 1 },
-      visible: {
-        opacity: 1,
-        transition: {
-          staggerChildren: 0.2,
-        },
-      },
-    };
-  
-    const itemVariants = {
-      hidden: { opacity: 0, y: 50 },
-      visible: { opacity: 1, y: 0 },
-    };
-  
+    const businessOptions: string[] = [
+      ...new Set(products.filter(Boolean).flatMap((product) => product.business)),
+    ]; 
+    const regionOptions: string[] = [
+      ...new Set(products.filter(Boolean).flatMap((product) => product.regions)),
+    ]; 
 
-  const businessOptions: string[] = [
-    ...new Set(products.filter(Boolean).flatMap((product) => product.business)),
-  ]; 
-  const regionOptions: string[] = [
-    ...new Set(products.filter(Boolean).flatMap((product) => product.regions)),
-  ]; 
-  
+  const containerVariants = {
+    hidden: { opacity: 1 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 50 },
+    visible: { opacity: 1, y: 0 },
+  };
+
   return (
     <div>
       <div className="d-flex align-items-center justify-content-center">
         <div className="">
-          <AddProduct onSubmit={addProduct} title="Add New Product" />
+        <Button onClick={() => navigate('/status', { state: { editMode: false } })}>Add New Product</Button>
         </div>
         <SortProduct onProductSort={handleProductSort} />
         <div className="d-flex m-2 align-items-center">
           Filter By:
-          <div
-            className="d-flex border align-items-center mx-2 p-2"
-            style={{ borderRadius: "10px", background:'#fff' }}
-          >
-            <SearchProduct
-              placeholder="Search Product"
-              onSearch={handleSearch}
-            />
+          <div className="d-flex border align-items-center mx-2 p-2" style={{ borderRadius: "10px", background: '#fff' }}>
+            <SearchProduct placeholder="Search Product" onSearch={handleSearch} />
             <div className="d-flex align-items-center">
               <h6 className="mx-2 mb-0">Business:</h6>
               <MultiSelectDropdown
@@ -142,40 +153,31 @@ export function Home() {
           <Button onClick={toggleFilter}>Show {filter === 'active' ? 'Request List' : 'Active Products'}</Button>
         </div>
       </div>
-      <motion.div
-        className="d-flex flex-wrap mt-4 justify-content-center"
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-      >
+      <motion.div className="d-flex flex-wrap mt-4 justify-content-center" variants={containerVariants} initial="hidden" animate="visible">
         {sortedAndFilteredProducts.length > 0 ? (
           sortedAndFilteredProducts.map((product) => (
-            <motion.div
-              key={product.id}
-              style={{ margin: "10px" }}
-              variants={itemVariants}
-            >
+            <motion.div key={product.id} style={{ margin: "10px" }} variants={itemVariants}>
               <ProductCard
                 id={product.id}
                 name={product.name}
                 business={product.business}
                 regions={product.regions}
-                withLink
                 deleteProduct={handleDelete}
                 isDelete
                 status={product.status}
+                onEdit={handleEdit} // Pass the onEdit function
               />
             </motion.div>
           ))
         ) : (
-          <div
-            className="w-100 d-flex justify-content-center"
-            style={{ marginTop: "10%" }}
-          >
+          <div className="w-100 d-flex justify-content-center" style={{ marginTop: "10%" }}>
             <h4>No Card found</h4>
           </div>
         )}
       </motion.div>
+
+      {/* Render ProductForm component */}
+      <ProductForm productForm={selectedProduct} onSubmit={handleSubmit} title="" editMode/>
     </div>
   );
 }

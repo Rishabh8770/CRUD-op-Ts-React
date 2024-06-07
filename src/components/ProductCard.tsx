@@ -1,17 +1,17 @@
 import { Trash2 } from "lucide-react";
 import Card from "react-bootstrap/Card";
-import { Link } from "react-router-dom";
 import { notifyDeleteProduct } from "../utils/NotificationUtils";
+import { Link } from 'react-router-dom';
 
 type ProductListProps = {
   id: string;
   name: string;
   business: string[];
   regions: string[];
-  withLink: boolean;
   deleteProduct: (id: string) => void;
   isDelete: boolean;
   status: string;
+  onEdit: (id: string) => void; // Add onEdit prop
 };
 
 export function ProductCard({
@@ -19,15 +19,19 @@ export function ProductCard({
   name,
   business,
   regions,
-  withLink = true,
   isDelete = true,
   deleteProduct,
   status,
+  onEdit, // Destructure onEdit prop
 }: ProductListProps) {
   const handleDelete = (e: React.MouseEvent) => {
     e.preventDefault();
-
     notifyDeleteProduct({ id, name }, () => deleteProduct(id));
+  };
+
+  const handleEdit = (e: React.MouseEvent) => {
+    e.preventDefault();
+    onEdit(id); // Call onEdit with product ID
   };
 
   const cardContent = (
@@ -63,26 +67,17 @@ export function ProductCard({
             </p>
           </Card.Text>
         </div>
-        <div className="absolute bottom-3 right-2">
+        <Link to='/status' onClick={handleEdit} className="underline hover:text-blue-600">Edit</Link>
+        <div className="absolute bottom-3 right-2 cursor-pointer">
           {isDelete && <Trash2 onClick={handleDelete} />}
         </div>
       </Card.Body>
     </Card>
   );
 
-  if (withLink) {
-    return (
-      <div key={id} className="m-3">
-        <Link to={`/product/${id}`} style={{ textDecoration: "none" }}>
-          {cardContent}
-        </Link>
-      </div>
-    );
-  } else {
-    return (
-      <div key={id} className="m-3">
-        {cardContent}
-      </div>
-    );
-  }
+  return (
+    <div key={id} className="m-3">
+      {cardContent}
+    </div>
+  );
 }
