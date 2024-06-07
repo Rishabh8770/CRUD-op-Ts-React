@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+/* import { useEffect, useState } from "react";
 import { ProductDisplay } from "../components/EditProduct";
 import { ProductProps } from "../types/types";
 import { useProductContext } from "../Context/ProductPageContext";
@@ -35,3 +35,4 @@ export function ProductDisplayAndEdit() {
     <ProductDisplay onSubmit={handleSubmit} title="Edit Product" product={product} />
   );
 }
+ */

@@ -2,6 +2,7 @@ import { Trash2 } from "lucide-react";
 import Card from "react-bootstrap/Card";
 import { Link } from "react-router-dom";
 import { notifyDeleteProduct } from "../utils/NotificationUtils";
+import { Button } from "react-bootstrap";
 
 type ProductListProps = {
   id: string;
@@ -12,6 +13,7 @@ type ProductListProps = {
   deleteProduct: (id: string) => void;
   isDelete: boolean;
   status: string;
+  onEdit: () => void;
 };
 
 export function ProductCard({
@@ -23,6 +25,7 @@ export function ProductCard({
   isDelete = true,
   deleteProduct,
   status,
+  onEdit,
 }: ProductListProps) {
   const handleDelete = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -63,6 +66,9 @@ export function ProductCard({
             </Card.Text>
           </div>
         </div>
+        <Button variant="primary" onClick={onEdit}>
+          Edit
+        </Button>
         {isDelete && (
           <Trash2
             className="absolute bottom-3 right-3 cursor-pointer"

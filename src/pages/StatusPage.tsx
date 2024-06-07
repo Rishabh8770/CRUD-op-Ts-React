@@ -1,19 +1,34 @@
+// src/pages/StatusPage.tsx
 import { useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
 import { useProductContext } from "../Context/ProductPageContext";
 import { ProductProps } from "../types/types";
 import { MultiSelectDropdown, Option } from "../components/MultiSelectDropdown";
+import { ProductForm } from "../components/ProductForm";
+import { useNavigate, useLocation } from "react-router-dom";
 
 export function StatusPage() {
-  const { products, approveProductStep, rejectProduct } = useProductContext();
-  const [selectedStatusFilters, setSelectedStatusFilters] = useState<
-    Option[] | null
-  >(null);
+  const { products, approveProductStep, rejectProduct, addProduct, updateProduct } = useProductContext();
+  const [selectedStatusFilters, setSelectedStatusFilters] = useState<Option[] | null>(null);
   const [statusData, setStatusData] = useState<ProductProps[]>(products);
+  const [editingProduct, setEditingProduct] = useState<ProductProps | null>(null);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     setStatusData(products);
   }, [products]);
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const productId = searchParams.get("editProductId");
+    if (productId) {
+      const productToEdit = products.find(product => product.id === productId);
+      setEditingProduct(productToEdit || null);
+    } else {
+      setEditingProduct(null);
+    }
+  }, [location.search, products]);
 
   const handleApproveStepChange = async (
     productId: string,
@@ -49,6 +64,15 @@ export function StatusPage() {
     setSelectedStatusFilters(selectedOptions);
   };
 
+  const handleFormSubmit = (product: ProductProps) => {
+    if (editingProduct) {
+      updateProduct(product);
+    } else {
+      addProduct(product);
+    }
+    navigate('/status');
+  };
+
   const filteredProducts =
     selectedStatusFilters && selectedStatusFilters.length > 0
       ? statusData.filter((product) =>
@@ -70,6 +94,18 @@ export function StatusPage() {
         />
       </div>
       <div className="flex justify-center flex-col">
+        {editingProduct ? (
+          <ProductForm
+            product={editingProduct}
+            onSubmit={handleFormSubmit}
+            title="Edit Product"
+          />
+        ) : (
+          <ProductForm
+            onSubmit={handleFormSubmit}
+            title="Add New Product"
+          />
+        )}
         <table className="min-w-full bg-white border border-gray-200">
           <thead>
             <tr>
@@ -129,6 +165,12 @@ export function StatusPage() {
                       }
                     >
                       Reject
+                    </Button>
+                    <Button
+                      variant="outline-secondary"
+                      onClick={() => navigate(`/status?editProductId=${product.id}`)}
+                    >
+                      Edit
                     </Button>
                   </div>
                 </td>

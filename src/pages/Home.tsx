@@ -1,19 +1,23 @@
 import { useState } from "react";
-import { AddProduct } from "../components/AddProduct";
+import { useNavigate } from "react-router-dom";
 import { ProductCard } from "../components/ProductCard";
 import { ProductProps } from "../types/types";
 import { SortProduct, SortOptions } from "../components/SortProduct";
 import { useProductContext } from "../Context/ProductPageContext";
 import { SearchProduct } from "../components/SearchProduct";
 import { MultiSelectDropdown, Option } from "../components/MultiSelectDropdown";
+import { Button } from "react-bootstrap";
+import { motion } from "framer-motion";
 
 export function Home() {
-  const { products, addProduct, deleteProduct } = useProductContext();
+  const { products, deleteProduct } = useProductContext();
+  const navigate = useNavigate();
 
   const [searchProduct, setSearchProduct] = useState("");
-  const [sortOption, setSortOption] =useState<SortOptions>("--please select--");
+  const [sortOption, setSortOption] = useState<SortOptions>("--please select--");
   const [selectBusinessOptions, setSelectBusinessOptions] = useState<Option[] | null>(null);
   const [selectRegionOptions, setSelectRegionOptions] = useState<Option[] | null>(null);
+  const [filter, setFilter] = useState<'active' | 'non-active'>('active');
 
   const handleSelectBusinessFilterChange = (selectedOptions: Option[] | null) => {
     setSelectBusinessOptions(selectedOptions);
@@ -31,17 +35,22 @@ export function Home() {
     setSortOption(sortProduct);
   };
 
+  const toggleFilter = () => {
+    setFilter(prevFilter => prevFilter === 'active' ? 'non-active' : 'active');
+  };
+
   const applyFilterAndSort = (product: ProductProps) => {
     if (!product) return false;
 
-    if(product.status === "rejected" || product.status === "delete_pending" || product.status === "deleted") return false;
+    if (filter === 'active' && product.status !== 'active') return false;
+    if (filter === 'non-active' && product.status === 'active') return false;
 
     if (searchProduct && !product.name.toLowerCase().includes(searchProduct.toLowerCase())) {
       return false;
     }
 
     if (selectBusinessOptions && selectBusinessOptions.length > 0 && !selectBusinessOptions.every((option) => product.business.includes(option.value))) {
-        return false;
+      return false;
     }
 
     if (selectRegionOptions && selectRegionOptions.length > 0 && !selectRegionOptions.every((option) => product.regions.includes(option.value))) {
@@ -51,11 +60,9 @@ export function Home() {
     return true;
   };
 
-  const handleDelete = (id:string) => {
-    
-        deleteProduct(id)
-    
-  }
+  const handleDelete = (id: string) => {
+    deleteProduct(id);
+  };
 
   const sortedAndFilteredProducts = products
     .filter(applyFilterAndSort)
@@ -70,25 +77,40 @@ export function Home() {
       return 0;
     });
 
+  const containerVariants = {
+    hidden: { opacity: 1 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 50 },
+    visible: { opacity: 1, y: 0 },
+  };
+
   const businessOptions: string[] = [
     ...new Set(products.filter(Boolean).flatMap((product) => product.business)),
-  ]; 
+  ];
   const regionOptions: string[] = [
     ...new Set(products.filter(Boolean).flatMap((product) => product.regions)),
-  ]; 
-  
+  ];
+
   return (
     <div>
       <div className="d-flex align-items-center justify-content-center">
         <div className="">
-          <AddProduct onSubmit={addProduct} title="Add New Product" />
+          <Button onClick={() => navigate('/status')}>Add New Product</Button>
         </div>
         <SortProduct onProductSort={handleProductSort} />
         <div className="d-flex m-2 align-items-center">
           Filter By:
           <div
             className="d-flex border align-items-center mx-2 p-2"
-            style={{ borderRadius: "10px", background:'#fff' }}
+            style={{ borderRadius: "10px", background: '#fff' }}
           >
             <SearchProduct
               placeholder="Search Product"
@@ -114,22 +136,35 @@ export function Home() {
             </div>
           </div>
         </div>
+        <div>
+          <Button onClick={toggleFilter}>Show {filter === 'active' ? 'Request List' : 'Active Products'}</Button>
+        </div>
       </div>
-      <div className="d-flex flex-wrap mt-4 justify-content-center">
+      <motion.div
+        className="d-flex flex-wrap mt-4 justify-content-center"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
         {sortedAndFilteredProducts.length > 0 ? (
           sortedAndFilteredProducts.map((product) => (
-            <div key={product.id} style={{ margin: "10px" }}>
+            <motion.div
+              key={product.id}
+              style={{ margin: "10px" }}
+              variants={itemVariants}
+            >
               <ProductCard
                 id={product.id}
                 name={product.name}
                 business={product.business}
                 regions={product.regions}
-                withLink
+                withLink={false}
                 deleteProduct={handleDelete}
                 isDelete
                 status={product.status}
+                onEdit={() => navigate(`/status?editProductId=${product.id}`)}
               />
-            </div>
+            </motion.div>
           ))
         ) : (
           <div
@@ -139,7 +174,7 @@ export function Home() {
             <h4>No Card found</h4>
           </div>
         )}
-      </div>
+      </motion.div>
     </div>
   );
 }
