@@ -22,6 +22,7 @@ type LocationState = {
   editingProduct?: boolean;
   addingNewProduct?: boolean;
   viewOnly?: boolean;
+  viewOnlyStatus?: boolean;
 };
 
 export function StatusPage() {
@@ -29,6 +30,7 @@ export function StatusPage() {
   const state = location.state as LocationState;
   const editingProduct = state?.editingProduct || false;
   const viewOnly = state?.viewOnly || false;
+  const viewOnlyStatus = state?.viewOnlyStatus || false;
   const productToEdit = state?.product;
   const {
     addProduct,
@@ -164,7 +166,9 @@ export function StatusPage() {
   };
 
   const productDetailsBlock = productToEdit && (
-    <div className="container mb-4 p-4 border border-gray-200 rounded">
+    <div className="container">
+    <p className="text-3xl my-2">Product Details :</p>
+    <div className="mb-4 p-4 border border-gray-200 rounded">
       <h2 className="text-xl font-bold mb-4 underline">{productToEdit.name}</h2>
       <p>
         <strong>Business:</strong> {productToEdit.business.join(", ")}
@@ -176,11 +180,12 @@ export function StatusPage() {
         <strong>Status:</strong> {productToEdit.status}
       </p>
     </div>
+    </div>
   );
 
   const statusView = (
     <>
-      <div className="mb-4 w-full flex justify-center items-center sticky top-0 z-50">
+      <div className="mb-4 w-full flex justify-center items-center">
         <p className="mx-2">Filter Status :</p>
         <MultiSelectDropdown
           options={["active", "pending", "rejected", "deleted"]}
@@ -222,9 +227,9 @@ export function StatusPage() {
                       >
                         {product.status}
                       </td>
-                      <td className="py-2 px-4 border-b border-gray-200 text-center">
+                      <td className="py-2 px-4 border border-gray-200 text-center">
                         <div className="flex justify-center items-center">
-                          <span className="mx-4">Approval one</span>
+                          <span className="mx-4">Approval-1</span>
 
                           <Button
                             variant="outline-primary"
@@ -240,7 +245,7 @@ export function StatusPage() {
                               handleApproveStepChange(product.id, "step1")
                             }
                           >
-                            Approve-1
+                            Approve
                           </Button>
                           <Button
                             variant="outline-danger"
@@ -259,9 +264,9 @@ export function StatusPage() {
                       </td>
                     </tr>
                     <tr>
-                      <td className="py-2 px-4 border-b border-gray-200 text-center">
+                      <td className="py-2 px-4 border border-gray-200 text-center">
                         <div className="flex justify-center items-center">
-                          <span className="mx-4">Approval Two</span>
+                          <span className="mx-4">Approval-2</span>
                           <Button
                             variant="outline-primary"
                             disabled={[
@@ -276,7 +281,7 @@ export function StatusPage() {
                               handleApproveStepChange(product.id, "step2")
                             }
                           >
-                            Approve-2
+                            Approve
                           </Button>
                           <Button
                             variant="outline-danger"
@@ -313,6 +318,9 @@ export function StatusPage() {
           className="cursor-pointer border rounded"
         />
       </div>
+      {viewOnlyStatus && (
+        <div>{statusView}</div>
+      )}
       {viewOnly ? (
         <div className="h-full overflow-y-auto">
           {productDetailsBlock}
