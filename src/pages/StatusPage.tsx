@@ -25,7 +25,7 @@ type LocationState = {
 
 export function StatusPage() {
   const location = useLocation();
-  const state = location.state as LocationState; // Ensure the correct type assertion here
+  const state = location.state as LocationState;
   const editingProduct = state?.editingProduct || false;
   const viewOnly = state?.viewOnly || false;
   const productToEdit = state?.product;
