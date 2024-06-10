@@ -1,4 +1,4 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import AddAndEditForm from "../components/AddAndEditForm";
 import { v4 as uuidv4 } from "uuid";
@@ -15,6 +15,7 @@ import { useProductContext } from "../Context/ProductPageContext";
 import { Button } from "react-bootstrap";
 import React from "react";
 import { NotificationContainer } from "../components/UserFeedbacks";
+import { ArrowLeft } from "lucide-react";
 
 type LocationState = {
   product?: ProductProps;
@@ -36,6 +37,7 @@ export function StatusPage() {
     approveProductStep,
     rejectProduct,
   } = useProductContext();
+  const navigate = useNavigate();
 
   const [selectedStatusFilters, setSelectedStatusFilters] = useState<
     Option[] | null
@@ -130,6 +132,10 @@ export function StatusPage() {
         )
       : statusData;
 
+  const handleArrowClick = () => {
+    navigate("/");
+  };
+
   const handleSubmit = async () => {
     if (newProduct.business.length === 0 || newProduct.regions.length === 0) {
       notifyMandatoryWarn();
@@ -140,6 +146,7 @@ export function StatusPage() {
       if (editingProduct) {
         newProduct.status = "pending";
         await updateProduct(newProduct);
+        setNewProduct(newProduct);
         notifyEditProduct();
       } else {
         await addProduct(newProduct);
@@ -158,11 +165,11 @@ export function StatusPage() {
 
   const productDetailsBlock = productToEdit && (
     <div className="container mb-4 p-4 border border-gray-200 rounded">
-      <h2 className="text-xl font-bold mb-2">{productToEdit.name}</h2>
+      <h2 className="text-xl font-bold mb-4 underline">{productToEdit.name}</h2>
       <p>
         <strong>Business:</strong> {productToEdit.business.join(", ")}
       </p>
-      <p>
+      <p className="my-4">
         <strong>Regions:</strong> {productToEdit.regions.join(", ")}
       </p>
       <p>
@@ -199,93 +206,97 @@ export function StatusPage() {
             </tr>
           </thead>
           <tbody>
-            {filteredProducts.length !== 0 ? filteredProducts.map((product) => (
-              <React.Fragment key={product.id}>
-                <tr>
-                  <td
-                    className="py-2 px-4 border-b border-gray-200 text-center font-bold"
-                    rowSpan={2}
-                  >
-                    <strong>{product.name}</strong>
-                  </td>
-                  <td
-                    className="py-2 px-4 border-b border-gray-200 text-center"
-                    rowSpan={2}
-                  >
-                    {product.status}
-                  </td>
-                  <td className="py-2 px-4 border-b border-gray-200 text-center">
-                    <div className="flex justify-center items-center">
-                    <span className="mx-4">Approval one</span>
+            {filteredProducts.length !== 0
+              ? filteredProducts.map((product) => (
+                  <React.Fragment key={product.id}>
+                    <tr>
+                      <td
+                        className="py-2 px-4 border-b border-gray-200 text-center font-bold"
+                        rowSpan={2}
+                      >
+                        <strong>{product.name}</strong>
+                      </td>
+                      <td
+                        className="py-2 px-4 border-b border-gray-200 text-center"
+                        rowSpan={2}
+                      >
+                        {product.status}
+                      </td>
+                      <td className="py-2 px-4 border-b border-gray-200 text-center">
+                        <div className="flex justify-center items-center">
+                          <span className="mx-4">Approval one</span>
 
-                      <Button
-                        variant="outline-primary"
-                        disabled={[
-                          "active",
-                          "rejected",
-                          "deleted",
-                          "approval_pending",
-                          "delete_approval_pending",
-                        ].includes(product.status)}
-                        className="mr-2"
-                        onClick={() =>
-                          handleApproveStepChange(product.id, "step1")
-                        }
-                      >
-                        Approve-1
-                      </Button>
-                      <Button
-                        variant="outline-danger"
-                        disabled={["active", "rejected", "deleted"].includes(
-                          product.status
-                        )}
-                        onClick={() =>
-                          handleRejectStatusChange(product.id, "rejected")
-                        }
-                      >
-                        Reject
-                      </Button>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="py-2 px-4 border-b border-gray-200 text-center">
-                    <div className="flex justify-center items-center">
-                    <span className="mx-4">Approval Two</span>
-                      <Button
-                        variant="outline-primary"
-                        disabled={[
-                          "active",
-                          "rejected",
-                          "deleted",
-                          "pending",
-                          "delete_pending",
-                        ].includes(product.status)}
-                        className="mr-2"
-                        onClick={() =>
-                          handleApproveStepChange(product.id, "step2")
-                        }
-                      >
-                        Approve-2
-                      </Button>
-                      <Button
-                        variant="outline-danger"
-                        disabled={["active", "rejected", "deleted"].includes(
-                          product.status
-                        )}
-                        onClick={() =>
-                          handleRejectStatusChange(product.id, "rejected")
-                        }
-                      >
-                        Reject
-                      </Button>
-                    </div>
-                  </td>
-                </tr>
-              </React.Fragment>
-            )):(
-              "No product with filtered status"
-            )}
+                          <Button
+                            variant="outline-primary"
+                            disabled={[
+                              "active",
+                              "rejected",
+                              "deleted",
+                              "approval_pending",
+                              "delete_approval_pending",
+                            ].includes(product.status)}
+                            className="mr-2"
+                            onClick={() =>
+                              handleApproveStepChange(product.id, "step1")
+                            }
+                          >
+                            Approve-1
+                          </Button>
+                          <Button
+                            variant="outline-danger"
+                            disabled={[
+                              "active",
+                              "rejected",
+                              "deleted",
+                            ].includes(product.status)}
+                            onClick={() =>
+                              handleRejectStatusChange(product.id, "rejected")
+                            }
+                          >
+                            Reject
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="py-2 px-4 border-b border-gray-200 text-center">
+                        <div className="flex justify-center items-center">
+                          <span className="mx-4">Approval Two</span>
+                          <Button
+                            variant="outline-primary"
+                            disabled={[
+                              "active",
+                              "rejected",
+                              "deleted",
+                              "pending",
+                              "delete_pending",
+                            ].includes(product.status)}
+                            className="mr-2"
+                            onClick={() =>
+                              handleApproveStepChange(product.id, "step2")
+                            }
+                          >
+                            Approve-2
+                          </Button>
+                          <Button
+                            variant="outline-danger"
+                            disabled={[
+                              "active",
+                              "rejected",
+                              "deleted",
+                            ].includes(product.status)}
+                            onClick={() =>
+                              handleRejectStatusChange(product.id, "rejected")
+                            }
+                          >
+                            Reject
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  </React.Fragment>
+                ))
+              : "No product with filtered status"}
           </tbody>
         </table>
       </div>
@@ -294,6 +305,14 @@ export function StatusPage() {
 
   return (
     <>
+      <div className="px-10">
+        <ArrowLeft
+          width={50}
+          height={30}
+          onClick={handleArrowClick}
+          className="cursor-pointer border rounded"
+        />
+      </div>
       {viewOnly ? (
         <div className="h-full overflow-y-auto">
           {productDetailsBlock}
