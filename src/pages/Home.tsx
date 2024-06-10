@@ -15,13 +15,14 @@ export function Home() {
   const [searchProduct, setSearchProduct] = useState("");
   const [sortOption, setSortOption] =
     useState<SortOptions>("--please select--");
-  const [selectBusinessOptions, setSelectBusinessOptions] = useState<
-    Option[] | null
-  >(null);
-  const [selectRegionOptions, setSelectRegionOptions] = useState<
-    Option[] | null
-  >(null);
+  const [selectBusinessOptions, setSelectBusinessOptions] = useState<Option[] | null>(null);
+  const [selectRegionOptions, setSelectRegionOptions] = useState<Option[] | null>(null);
   const [filter, setFilter] = useState<"active" | "non-active">("active");
+  const [selectedStatusFilters, setSelectedStatusFilters] = useState<Option[] | null>(null);
+
+const handleStatusFilterChange = (selectedOptions: Option[] | null) => {
+  setSelectedStatusFilters(selectedOptions);
+};
 
   const handleSelectBusinessFilterChange = (
     selectedOptions: Option[] | null
@@ -53,30 +54,19 @@ export function Home() {
     if (filter === "active" && product.status !== "active") return false;
     if (filter === "non-active" && product.status === "active") return false;
 
-    if (
-      searchProduct &&
-      !product.name.toLowerCase().includes(searchProduct.toLowerCase())
-    ) {
+    if (selectedStatusFilters && selectedStatusFilters.length > 0 && !selectedStatusFilters.some((option) => option.value === product.status)) {
       return false;
     }
 
-    if (
-      selectBusinessOptions &&
-      selectBusinessOptions.length > 0 &&
-      !selectBusinessOptions.every((option) =>
-        product.business.includes(option.value)
-      )
-    ) {
+    if (searchProduct && !product.name.toLowerCase().includes(searchProduct.toLowerCase())) {
       return false;
     }
 
-    if (
-      selectRegionOptions &&
-      selectRegionOptions.length > 0 &&
-      !selectRegionOptions.every((option) =>
-        product.regions.includes(option.value)
-      )
-    ) {
+    if (selectBusinessOptions &&  selectBusinessOptions.length > 0 &&  !selectBusinessOptions.every((option) =>  product.business.includes(option.value))) {
+      return false;
+    }
+
+    if (  selectRegionOptions &&  selectRegionOptions.length > 0 &&  !selectRegionOptions.every((option) =>  product.regions.includes(option.value))) {
       return false;
     }
 
@@ -163,6 +153,14 @@ export function Home() {
           <Button onClick={toggleFilter}>
             Show {filter === "active" ? "Request List" : "Active Products"}
           </Button>
+        </div>
+        <div className="mx-3">
+        {filter === 'non-active' ? (<MultiSelectDropdown
+            options={["rejected", "pending", "deleted"]}
+            placeholder="Filter by Status"
+            onChange={handleStatusFilterChange}
+            value={selectedStatusFilters}
+          />):('')}
         </div>
       </div>
       <motion.div
