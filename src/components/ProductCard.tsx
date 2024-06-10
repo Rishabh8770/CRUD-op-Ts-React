@@ -31,60 +31,71 @@ export function ProductCard({
 
   const handleEdit = (e: React.MouseEvent) => {
     e.preventDefault();
-    navigate('/status', { state: { product: { id, name, business, regions, status }, editingProduct: true } });
+    navigate("/status", {
+      state: {
+        product: { id, name, business, regions, status },
+        editingProduct: true,
+      },
+    });
   };
 
   const cardContent = (
-    <Card className="w-[17rem] h-[22rem] overflow-y-hidden drop-shadow-xl">
-      <Card.Body className="flex flex-col h-full">
-        <Card.Title className="underline">{name}</Card.Title>
-        <div className="d-flex flex-column flex-grow">
-          <div className="my-4 h-16">
+    <>
+      <Card className="w-[17rem] h-[22rem] overflow-y-hidden drop-shadow-xl">
+        <Card.Body className="flex flex-col h-full">
+          <Card.Title className="underline">{name}</Card.Title>
+          <div className="d-flex flex-column flex-grow">
+            <div className="my-4 h-16">
+              <Card.Text>
+                <strong>Business :</strong> {business.join(", ")}
+              </Card.Text>
+            </div>
+            <div className="h-20">
+              <Card.Text>
+                <strong>Regions :</strong> {regions.join(", ")}
+              </Card.Text>
+            </div>
+          </div>
+          <div className="mb-4">
             <Card.Text>
-              <strong>Business :</strong> {business.join(", ")}
+              <p
+                className={`text-base p-2 mb-2 text-center ${
+                  status === "pending"
+                    ? "text-gray-500 bg-gray-200"
+                    : status === "active"
+                    ? "text-green-500 bg-green-100"
+                    : status === "rejected"
+                    ? "text-red-500 bg-red-100"
+                    : "text-white bg-gray-700"
+                }`}
+              >
+                {status}
+              </p>
             </Card.Text>
           </div>
-          <div className="h-20">
-            <Card.Text>
-              <strong>Regions :</strong> {regions.join(", ")}
-            </Card.Text>
+          <div className="flex justify-between gap-2">
+            <Edit onClick={handleEdit} />
+            {isDelete && <Trash2 onClick={handleDelete} />}
           </div>
-        </div>
-        <div className="mb-4">
-          <Card.Text>
-            <p
-              className={`text-base p-2 mb-2 text-center ${
-                status === "pending"
-                  ? "text-gray-500 bg-gray-200"
-                  : status === "active"
-                  ? "text-green-500 bg-green-100"
-                  : status === "rejected"
-                  ? "text-red-500 bg-red-100"
-                  : "text-white bg-gray-700"
-              }`}
-            >
-              {status}
-            </p>
-          </Card.Text>
-        </div>
-        <div className="flex justify-between gap-2">
-          <Edit onClick={handleEdit} />
-          {isDelete && <Trash2 onClick={handleDelete} />}
-        </div>
-      </Card.Body>
-    </Card>
+        </Card.Body>
+      </Card>
+    </>
   );
 
   return (
-    <div key={id} className="m-3">
-      <Link
-        to="/status"
-        state={{ product: { id, name, business, regions, status }, viewOnly: true }}
-        style={{ textDecoration: "none" }}
-      >
-        {cardContent}
-      </Link>
-    </div>
+    <>
+      <div key={id} className="m-3">
+        <Link
+          to="/status"
+          state={{
+            product: { id, name, business, regions, status },
+            viewOnly: true,
+          }}
+          style={{ textDecoration: "none" }}
+        >
+          {cardContent}
+        </Link>
+      </div>
+    </>
   );
 }
-

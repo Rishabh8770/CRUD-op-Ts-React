@@ -8,6 +8,7 @@ import { SearchProduct } from "../components/SearchProduct";
 import { MultiSelectDropdown, Option } from "../components/MultiSelectDropdown";
 import { Button } from "react-bootstrap";
 import { motion } from "framer-motion";
+import { NotificationContainer } from "../components/UserFeedbacks";
 
 export function Home() {
   const { products, addProduct, deleteProduct } = useProductContext();
@@ -196,6 +197,8 @@ const handleStatusFilterChange = (selectedOptions: Option[] | null) => {
           </div>
         )}
       </motion.div>
+      <NotificationContainer />
+
     </div>
   );
 }
