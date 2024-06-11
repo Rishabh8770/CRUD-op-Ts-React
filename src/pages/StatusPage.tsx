@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import AddAndEditForm from "../components/AddAndEditForm";
 import { v4 as uuidv4 } from "uuid";
 import { MultiSelectDropdown, Option } from "../components/MultiSelectDropdown";
-import { ProductProps } from "../types/types";
+import { ProductProps, LocationState } from "../types/types";
 import {
   notifyMandatoryWarn,
   notifyAddProduct,
@@ -16,14 +16,6 @@ import { Button } from "react-bootstrap";
 import React from "react";
 import { NotificationContainer } from "../components/UserFeedbacks";
 import { ArrowLeft } from "lucide-react";
-
-type LocationState = {
-  product?: ProductProps;
-  editingProduct?: boolean;
-  addingNewProduct?: boolean;
-  viewOnly?: boolean;
-  viewOnlyStatus?: boolean;
-};
 
 export function StatusPage() {
   const location = useLocation();
@@ -41,10 +33,9 @@ export function StatusPage() {
   } = useProductContext();
   const navigate = useNavigate();
 
-  const [selectedStatusFilters, setSelectedStatusFilters] = useState<
-    Option[] | null
-  >(null);
+  const [selectedStatusFilters, setSelectedStatusFilters] = useState<Option[] | null>(null);
   const [statusData, setStatusData] = useState<ProductProps[]>(products);
+  const [newlyAddedProduct, setNewlyAddedProduct] = useState<ProductProps | null>(null);
 
   const initialProductState: ProductProps = {
     id: uuidv4(),
@@ -54,9 +45,7 @@ export function StatusPage() {
     status: "pending",
   };
 
-  const [newProduct, setNewProduct] = useState<ProductProps>(
-    productToEdit || initialProductState
-  );
+  const [newProduct, setNewProduct] = useState<ProductProps>(productToEdit || initialProductState);
 
   useEffect(() => {
     if (productToEdit) {
@@ -91,10 +80,7 @@ export function StatusPage() {
     }
   };
 
-  const handleApproveStepChange = async (
-    productId: string,
-    step: "step1" | "step2"
-  ) => {
+  const handleApproveStepChange = async (productId: string, step: "step1" | "step2") => {
     try {
       await approveProductStep(productId, step);
       if (step === "step2") {
@@ -107,10 +93,7 @@ export function StatusPage() {
     }
   };
 
-  const handleRejectStatusChange = async (
-    productId: string,
-    status: "rejected"
-  ) => {
+  const handleRejectStatusChange = async (productId: string, status: "rejected") => {
     try {
       await rejectProduct(productId, status);
       setStatusData((prevStatusData) =>
@@ -128,11 +111,13 @@ export function StatusPage() {
   const filteredProducts =
     selectedStatusFilters && selectedStatusFilters.length > 0
       ? statusData.filter((product) =>
-          selectedStatusFilters.some(
-            (filter) => filter.value === product.status
-          )
+          selectedStatusFilters.some((filter) => filter.value === product.status)
         )
       : statusData;
+
+  const selectedProductStatuses = filteredProducts.filter(
+    (product) => product.id === (newlyAddedProduct?.id || productToEdit?.id)
+  );
 
   const handleArrowClick = () => {
     navigate("/");
@@ -148,10 +133,11 @@ export function StatusPage() {
       if (editingProduct) {
         newProduct.status = "pending";
         await updateProduct(newProduct);
-        setNewProduct(newProduct);
+        setNewProduct(initialProductState);
         notifyEditProduct();
       } else {
         await addProduct(newProduct);
+        setNewlyAddedProduct(newProduct);
         setNewProduct(initialProductState);
         notifyAddProduct();
       }
@@ -165,27 +151,10 @@ export function StatusPage() {
     }
   };
 
-  const productDetailsBlock = productToEdit && (
-    <div className="container">
-    <p className="text-3xl my-2">Product Details :</p>
-    <div className="mb-4 p-4 border border-gray-200 rounded">
-      <h2 className="text-xl font-bold mb-4 underline">{productToEdit.name}</h2>
-      <p>
-        <strong>Business:</strong> {productToEdit.business.join(", ")}
-      </p>
-      <p className="my-4">
-        <strong>Regions:</strong> {productToEdit.regions.join(", ")}
-      </p>
-      <p>
-        <strong>Status:</strong> {productToEdit.status}
-      </p>
-    </div>
-    </div>
-  );
-
   const statusView = (
     <>
-      <div className="mb-4 w-full flex justify-center items-center">
+      {viewOnlyStatus && (
+        <div className="mb-4 w-full flex justify-center items-center">
         <p className="mx-2">Filter Status :</p>
         <MultiSelectDropdown
           options={["active", "pending", "rejected", "deleted"]}
@@ -194,6 +163,7 @@ export function StatusPage() {
           value={selectedStatusFilters}
         />
       </div>
+      )}
 
       <div className="flex justify-center flex-col">
         <table className="min-w-full bg-white border border-gray-200">
@@ -211,8 +181,8 @@ export function StatusPage() {
             </tr>
           </thead>
           <tbody>
-            {filteredProducts.length !== 0
-              ? filteredProducts.map((product) => (
+            {selectedProductStatuses.length !== 0
+              ? selectedProductStatuses.map((product) => (
                   <React.Fragment key={product.id}>
                     <tr>
                       <td
@@ -318,16 +288,25 @@ export function StatusPage() {
           className="cursor-pointer border rounded"
         />
       </div>
-      {viewOnlyStatus && (
+      {/* {viewOnlyStatus && (
         <div>{statusView}</div>
-      )}
+      )} */}
       {viewOnly ? (
-        <div className="h-full overflow-y-auto">
-          {productDetailsBlock}
+        <div className="h-full">
+          <AddAndEditForm
+            handleInputChange={handleInputChange}
+            handleSubmit={handleSubmit}
+            title={editingProduct ? "Edit Product" : "Product Details"}
+            newProduct={newProduct}
+            editMode={editingProduct}
+            handleBusinessChange={handleBusinessChange}
+            handleRegionsChange={handleRegionsChange}
+            readOnly={true}
+          />
           <div>{statusView}</div>
         </div>
       ) : (
-        <div className="h-full overflow-y-auto">
+        <div className="h-full">
           <AddAndEditForm
             handleInputChange={handleInputChange}
             handleSubmit={handleSubmit}
@@ -337,7 +316,14 @@ export function StatusPage() {
             handleBusinessChange={handleBusinessChange}
             handleRegionsChange={handleRegionsChange}
           />
-          <div>{statusView}</div>
+          <div>
+            {(newlyAddedProduct || productToEdit) && (
+              <>
+                <h3 className="my-4 text-center">{newlyAddedProduct ? "Newly added product status" : ""}</h3>
+                {statusView}
+              </>
+            )}
+          </div>
           <NotificationContainer />
         </div>
       )}

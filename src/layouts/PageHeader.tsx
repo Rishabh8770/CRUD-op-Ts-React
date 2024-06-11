@@ -9,7 +9,7 @@ export function PageHeader() {
         <Nav.Link to="/" as={NavLink}>
           Home
         </Nav.Link>
-        <Nav.Link
+        {/* <Nav.Link
           to="/status"
           as={NavLink}
           state={{
@@ -17,7 +17,7 @@ export function PageHeader() {
           }}
         >
           Product Status
-        </Nav.Link>
+        </Nav.Link> */}
       </Nav>
     </NavbarBs>
   );
