@@ -1,17 +1,15 @@
 import { useState } from "react";
-import { AddProduct } from "../components/AddProduct";
 import { ProductCard } from "../components/ProductCard";
 import { ProductProps } from "../types/types";
-import { SortProduct, SortOptions } from "../components/SortProduct";
+import { SearchAndSortProduct, SortOptions } from "../components/SearchAndSortProduct";
 import { useProductContext } from "../Context/ProductPageContext";
-import { SearchProduct } from "../components/SearchProduct";
 import { MultiSelectDropdown, Option } from "../components/MultiSelectDropdown";
 import { Button } from "react-bootstrap";
 import { motion } from "framer-motion";
 import { NotificationContainer } from "../components/UserFeedbacks";
 
 export function Home() {
-  const { products, addProduct, deleteProduct } = useProductContext();
+  const { products, deleteProduct } = useProductContext();
 
   const [searchProduct, setSearchProduct] = useState("");
   const [sortOption, setSortOption] =
@@ -21,9 +19,9 @@ export function Home() {
   const [filter, setFilter] = useState<"active" | "non-active">("active");
   const [selectedStatusFilters, setSelectedStatusFilters] = useState<Option[] | null>(null);
 
-const handleStatusFilterChange = (selectedOptions: Option[] | null) => {
-  setSelectedStatusFilters(selectedOptions);
-};
+  const handleStatusFilterChange = (selectedOptions: Option[] | null) => {
+    setSelectedStatusFilters(selectedOptions);
+  };
 
   const handleSelectBusinessFilterChange = (
     selectedOptions: Option[] | null
@@ -115,21 +113,27 @@ const handleStatusFilterChange = (selectedOptions: Option[] | null) => {
 
   return (
     <div>
-      <div className="d-flex align-items-center justify-content-center">
-        <div className="">
-          <AddProduct onSubmit={addProduct} title="Add New Product" />
-        </div>
-        <SortProduct onProductSort={handleProductSort} />
+      <div className="flex items-center justify-center">
+      <div className="self-baseline">
+        <ProductCard
+          id=""
+          name=""
+          business={[]}
+          regions={[]}
+          deleteProduct={handleDelete}
+          status=""
+          isAddNewProduct
+          isDelete
+        />
+      </div>
+        <SearchAndSortProduct onProductSort={handleProductSort} placeholder="Search Product"
+              onSearch={handleSearch}/>
         <div className="d-flex m-2 align-items-center">
           Filter By:
           <div
             className="d-flex border align-items-center mx-2 p-2"
             style={{ borderRadius: "10px", background: "#fff" }}
           >
-            <SearchProduct
-              placeholder="Search Product"
-              onSearch={handleSearch}
-            />
             <div className="d-flex align-items-center">
               <h6 className="mx-2 mb-0">Business:</h6>
               <MultiSelectDropdown
@@ -164,8 +168,11 @@ const handleStatusFilterChange = (selectedOptions: Option[] | null) => {
           />):('')}
         </div>
       </div>
+
+      
+
       <motion.div
-        className="d-flex flex-wrap mt-4 justify-content-center"
+        className="d-flex flex-wrap justify-content-center"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
@@ -198,7 +205,6 @@ const handleStatusFilterChange = (selectedOptions: Option[] | null) => {
         )}
       </motion.div>
       <NotificationContainer />
-
     </div>
   );
 }

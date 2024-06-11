@@ -2,16 +2,8 @@ import { Trash2, Edit } from "lucide-react";
 import Card from "react-bootstrap/Card";
 import { Link, useNavigate } from "react-router-dom";
 import { notifyDeleteProduct } from "../utils/NotificationUtils";
-
-type ProductListProps = {
-  id: string;
-  name: string;
-  business: string[];
-  regions: string[];
-  deleteProduct: (id: string) => void;
-  isDelete: boolean;
-  status: string;
-};
+import { ProductListProps } from "../types/types";
+import { Button } from "react-bootstrap";
 
 export function ProductCard({
   id,
@@ -21,6 +13,7 @@ export function ProductCard({
   isDelete = true,
   deleteProduct,
   status,
+  isAddNewProduct = false,
 }: ProductListProps) {
   const navigate = useNavigate();
 
@@ -35,9 +28,24 @@ export function ProductCard({
       state: {
         product: { id, name, business, regions, status },
         editingProduct: true,
+        viewOnly: false,
       },
     });
   };
+
+  const handleAddProductClick = () => {
+    navigate("/status", { state: { addingNewProduct: true } });
+  };
+
+  if (isAddNewProduct) {
+    return (
+      <div className="overflow-y-hidden drop-shadow-xl flex items-center justify-center mt-3">
+        <Button variant="success" onClick={handleAddProductClick}>
+          <div>Add New Product</div>
+        </Button>
+      </div>
+    );
+  }
 
   const cardContent = (
     <>
@@ -83,19 +91,17 @@ export function ProductCard({
   );
 
   return (
-    <>
-      <div key={id} className="m-3">
-        <Link
-          to="/status"
-          state={{
-            product: { id, name, business, regions, status },
-            viewOnly: true,
-          }}
-          style={{ textDecoration: "none" }}
-        >
-          {cardContent}
-        </Link>
-      </div>
-    </>
+    <div key={id} className="m-3">
+      <Link
+        to="/status"
+        state={{
+          product: { id, name, business, regions, status },
+          viewOnly: true,
+        }}
+        style={{ textDecoration: "none" }}
+      >
+        {cardContent}
+      </Link>
+    </div>
   );
 }

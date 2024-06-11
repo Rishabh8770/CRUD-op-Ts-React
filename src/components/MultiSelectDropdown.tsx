@@ -12,7 +12,9 @@ type MultiSelectDropdownProps = {
   placeholder: string;
   onChange: (selectedOptions: Option[] | null) => void;
   value: Option[] | null;
+  isDisabled?: boolean;
 };
+
 const animatedComponents = makeAnimated();
 
 export const MultiSelectDropdown = ({
@@ -20,6 +22,7 @@ export const MultiSelectDropdown = ({
   placeholder,
   onChange,
   value,
+  isDisabled = false,
 }: MultiSelectDropdownProps) => {
   const memoizedOptions = useMemo(
     () => options.map((option) => ({ value: option, label: option })),
@@ -38,6 +41,7 @@ export const MultiSelectDropdown = ({
       placeholder={placeholder}
       components={animatedComponents}
       closeMenuOnSelect={false}
+      isDisabled={isDisabled}
     />
   );
 };
