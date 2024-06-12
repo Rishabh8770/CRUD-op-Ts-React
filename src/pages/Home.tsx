@@ -99,11 +99,7 @@ export function Home() {
 
     return true;
   };
-
-  const handleDelete = (id: string) => {
-    deleteProduct(id);
-  };
-
+  
   const sortedAndFilteredProducts = products
     .filter(applyFilterAndSort)
     .sort((a, b) => {
@@ -164,7 +160,7 @@ export function Home() {
             name=""
             business={[]}
             regions={[]}
-            deleteProduct={handleDelete}
+            deleteProduct={deleteProduct}
             status=""
             isAddNewProduct
             isDelete
@@ -239,7 +235,7 @@ export function Home() {
                   name={product.name}
                   business={product.business}
                   regions={product.regions}
-                  deleteProduct={handleDelete}
+                  deleteProduct={deleteProduct}
                   isDelete
                   status={product.status}
                 />

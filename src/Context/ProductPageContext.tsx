@@ -91,29 +91,30 @@ export function ProductProvider({ children }: ProductContextProviderProps) {
     }
   };
 
-  const approveProductStep = async (productId: string, step: "step1" | "step2") => {
+  const approveProductStep = async (
+    productId: string,
+    step: "step1" | "step2"
+  ) => {
     try {
       const product = products.find((product) => product.id === productId);
       if (!product) throw new Error("Product not found");
-  
+
       let newStatus = product.status;
       if (step === "step1") {
-        if (product.status === "delete_pending") {
-          newStatus = "delete_approval_pending";
-        } else {
-          newStatus = "approval_pending";
-        }
+        product.status === "delete_pending"
+          ? (newStatus = "delete_approval_pending")
+          : (newStatus = "approval_pending");
       } else if (step === "step2") {
-        if (product.status === "delete_approval_pending") {
-          newStatus = "deleted";
-        } else if (product.status === "delete_pending") {
-          newStatus = "delete_approval_pending";
-        } else {
-          newStatus = "active";
-        }
+        product.status === "delete_approval_pending"
+          ? (newStatus = "deleted")
+          : product.status === "delete_pending"
+          ? (newStatus = "delete_approval_pending")
+          : (newStatus = "active");
       }
-  
-      await axios.put(`${baseUrl}/products/${productId}/approve`, { status: newStatus });
+
+      await axios.put(`${baseUrl}/products/${productId}/approve`, {
+        status: newStatus,
+      });
       setProducts((prevProducts) =>
         prevProducts.map((product) =>
           product.id === productId ? { ...product, status: newStatus } : product
@@ -123,20 +124,22 @@ export function ProductProvider({ children }: ProductContextProviderProps) {
       console.error("Error approving product", error);
     }
   };
-  
+
   const rejectProduct = async (productId: string, status: "rejected") => {
     try {
       await axios.put(`${baseUrl}/products/${productId}/reject`, { status });
       setProducts((prevProducts) =>
-        prevProducts.map((product) =>
-          product.id === productId
-            ? {
-                ...product,
-                status:
-                  product.status === "delete_pending" ? "rejected" : status,
-              }
-            : product
-        ).filter((product) => product.status !== "delete_pending")
+        prevProducts
+          .map((product) =>
+            product.id === productId
+              ? {
+                  ...product,
+                  status:
+                    product.status === "delete_pending" ? "rejected" : status,
+                }
+              : product
+          )
+          .filter((product) => product.status !== "delete_pending")
       );
     } catch (error) {
       console.error("Error rejecting product", error);

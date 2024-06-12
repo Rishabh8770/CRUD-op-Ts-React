@@ -1,7 +1,7 @@
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { Button, Form } from "react-bootstrap";
 import { MultiSelectDropdown, Option } from "./MultiSelectDropdown";
 import { useProductContext } from "../Context/ProductPageContext";
-import { useEffect, useMemo, useState } from "react";
 import { ProductProps } from "../types/types";
 
 type ProductControlProps = {
@@ -36,27 +36,33 @@ function AddAndEditForm({
       newProduct.business.length > 0 &&
       newProduct.regions.length > 0;
     setAllFieldsFilled(requiredFieldsFilled);
-  }, [newProduct, editMode]);
+  }, [newProduct.name, newProduct.business, newProduct.regions, editMode]);
 
   useEffect(() => {
     if (!editMode) return;
     const originalProduct = products.find(
       (product) => product.id === newProduct.id
     );
+
+    if (!originalProduct) return;
+
+    const arraysAreEqual = (arr1: string[], arr2: string[]) => {
+      if (arr1.length !== arr2.length) return false;
+      const set1 = new Set(arr1);
+      const set2 = new Set(arr2);
+      return arr1.every((item) => set2.has(item)) && arr2.every((item) => set1.has(item));
+    };
+
     const changesDetected =
-      originalProduct &&
-      (JSON.stringify(originalProduct.business) !==
-        JSON.stringify(newProduct.business) ||
-        JSON.stringify(originalProduct.regions) !==
-          JSON.stringify(newProduct.regions));
-    setChangesMade(changesDetected || false);
-  }, [newProduct, products, editMode]);
+      !arraysAreEqual(originalProduct.business, newProduct.business) ||
+      !arraysAreEqual(originalProduct.regions, newProduct.regions);
 
-  useEffect(() => {
-    console.log("newProduct state in AddAndEditForm:", newProduct);
-  }, [newProduct]);
+    if (changesMade !== changesDetected) {
+      setChangesMade(changesDetected);
+    }
+  }, [newProduct.business, newProduct.regions, products, newProduct.id, editMode, changesMade]);
 
-  const getUniqueOptions = (data: string[]): Option[] => {
+  const getUniqueOptions = useCallback((data: string[]): Option[] => {
     const uniqueOptions: Option[] = [];
     data.forEach((item) => {
       if (!uniqueOptions.some((option) => option.value === item)) {
@@ -64,15 +70,15 @@ function AddAndEditForm({
       }
     });
     return uniqueOptions;
-  };
+  }, []);
 
   const businessOptions = useMemo(() => {
     return getUniqueOptions(products.flatMap((product) => product.business));
-  }, [products]);
+  }, [products, getUniqueOptions]);
 
   const regionsOptions = useMemo(() => {
     return getUniqueOptions(products.flatMap((product) => product.regions));
-  }, [products]);
+  }, [products, getUniqueOptions]);
 
   return (
     <div className="container border rounded my-4">

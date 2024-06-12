@@ -54,7 +54,7 @@ export function StatusPage() {
       setNewProduct({ ...newProduct });
     }
     setStatusData(products);
-  }, [productToEdit, products, newProduct]);
+  }, [productToEdit, products]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
