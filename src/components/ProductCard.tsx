@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { notifyDeleteProduct } from "../utils/NotificationUtils";
 import { ProductListProps } from "../types/types";
 import { Button } from "react-bootstrap";
+import {debounce} from 'lodash'
 
 export function ProductCard({
   id,
@@ -19,9 +20,9 @@ export function ProductCard({
 
   const handleDelete = (e: React.MouseEvent) => {
     e.preventDefault();
-    // if (status !== "delete_pending" || status !== "deleted") {
-    notifyDeleteProduct({ id, name }, () => deleteProduct(id));
-    // }
+    debounce(() => {
+      notifyDeleteProduct({ id, name }, () => deleteProduct(id));
+    }, 500)();
   };
 
   const handleEdit = (e: React.MouseEvent) => {
