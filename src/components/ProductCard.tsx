@@ -66,7 +66,7 @@ export function ProductCard({
           </div>
           <div className="mb-4">
             <Card.Text>
-              <p
+              <span
                 className={`text-base p-2 mb-2 text-center ${
                   status === "pending"
                     ? "text-gray-500 bg-gray-200"
@@ -78,7 +78,7 @@ export function ProductCard({
                 }`}
               >
                 {status}
-              </p>
+              </span>
             </Card.Text>
           </div>
           <div className="flex justify-between gap-2">

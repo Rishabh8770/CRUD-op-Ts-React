@@ -26,15 +26,15 @@ function AddAndEditForm({
   readOnly = false,
 }: ProductControlProps) {
   const { products } = useProductContext();
-
   const [allFieldsFilled, setAllFieldsFilled] = useState(false);
-
   const [changesMade, setChangesMade] = useState(false);
 
   useEffect(() => {
     if (editMode) return;
     const requiredFieldsFilled =
-      newProduct.name.trim() !== "" && newProduct.business.length > 0 && newProduct.regions.length > 0;
+      newProduct.name.trim() !== "" &&
+      newProduct.business.length > 0 &&
+      newProduct.regions.length > 0;
     setAllFieldsFilled(requiredFieldsFilled);
   }, [newProduct, editMode]);
 
@@ -45,10 +45,16 @@ function AddAndEditForm({
     );
     const changesDetected =
       originalProduct &&
-      (JSON.stringify(originalProduct.business) !== JSON.stringify(newProduct.business) ||
-        JSON.stringify(originalProduct.regions) !== JSON.stringify(newProduct.regions));
+      (JSON.stringify(originalProduct.business) !==
+        JSON.stringify(newProduct.business) ||
+        JSON.stringify(originalProduct.regions) !==
+          JSON.stringify(newProduct.regions));
     setChangesMade(changesDetected || false);
   }, [newProduct, products, editMode]);
+
+  useEffect(() => {
+    console.log("newProduct state in AddAndEditForm:", newProduct);
+  }, [newProduct]);
 
   const getUniqueOptions = (data: string[]): Option[] => {
     const uniqueOptions: Option[] = [];

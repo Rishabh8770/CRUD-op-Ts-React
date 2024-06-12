@@ -1,7 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ProductCard } from "../components/ProductCard";
 import { ProductProps } from "../types/types";
-import { SearchAndSortProduct, SortOptions } from "../components/SearchAndSortProduct";
+import {
+  SearchAndSortProduct,
+  SortOptions,
+} from "../components/SearchAndSortProduct";
 import { useProductContext } from "../Context/ProductPageContext";
 import { MultiSelectDropdown, Option } from "../components/MultiSelectDropdown";
 import { Button } from "react-bootstrap";
@@ -14,10 +17,16 @@ export function Home() {
   const [searchProduct, setSearchProduct] = useState("");
   const [sortOption, setSortOption] =
     useState<SortOptions>("--please select--");
-  const [selectBusinessOptions, setSelectBusinessOptions] = useState<Option[] | null>(null);
-  const [selectRegionOptions, setSelectRegionOptions] = useState<Option[] | null>(null);
+  const [selectBusinessOptions, setSelectBusinessOptions] = useState<
+    Option[] | null
+  >(null);
+  const [selectRegionOptions, setSelectRegionOptions] = useState<
+    Option[] | null
+  >(null);
   const [filter, setFilter] = useState<"active" | "non-active">("active");
-  const [selectedStatusFilters, setSelectedStatusFilters] = useState<Option[] | null>(null);
+  const [selectedStatusFilters, setSelectedStatusFilters] = useState<
+    Option[] | null
+  >(null);
 
   const handleStatusFilterChange = (selectedOptions: Option[] | null) => {
     setSelectedStatusFilters(selectedOptions);
@@ -53,19 +62,38 @@ export function Home() {
     if (filter === "active" && product.status !== "active") return false;
     if (filter === "non-active" && product.status === "active") return false;
 
-    if (selectedStatusFilters && selectedStatusFilters.length > 0 && !selectedStatusFilters.some((option) => option.value === product.status)) {
+    if (
+      selectedStatusFilters &&
+      selectedStatusFilters.length > 0 &&
+      !selectedStatusFilters.some((option) => option.value === product.status)
+    ) {
       return false;
     }
 
-    if (searchProduct && !product.name.toLowerCase().includes(searchProduct.toLowerCase())) {
+    if (
+      searchProduct &&
+      !product.name.toLowerCase().includes(searchProduct.toLowerCase())
+    ) {
       return false;
     }
 
-    if (selectBusinessOptions &&  selectBusinessOptions.length > 0 &&  !selectBusinessOptions.every((option) =>  product.business.includes(option.value))) {
+    if (
+      selectBusinessOptions &&
+      selectBusinessOptions.length > 0 &&
+      !selectBusinessOptions.every((option) =>
+        product.business.includes(option.value)
+      )
+    ) {
       return false;
     }
 
-    if (  selectRegionOptions &&  selectRegionOptions.length > 0 &&  !selectRegionOptions.every((option) =>  product.regions.includes(option.value))) {
+    if (
+      selectRegionOptions &&
+      selectRegionOptions.length > 0 &&
+      !selectRegionOptions.every((option) =>
+        product.regions.includes(option.value)
+      )
+    ) {
       return false;
     }
 
@@ -88,6 +116,22 @@ export function Home() {
       }
       return 0;
     });
+
+  const productIds = sortedAndFilteredProducts.map((product) => product.id);
+  const duplicateIds = productIds.filter(
+    (id, index) => productIds.indexOf(id) !== index
+  );
+
+  useEffect(() => {
+    if (duplicateIds.length > 0) {
+      console.warn("Duplicate product IDs found:", duplicateIds);
+    }
+  }, [duplicateIds]);
+
+  const uniqueProducts = sortedAndFilteredProducts.filter(
+    (product, index, self) =>
+      index === self.findIndex((p) => p.id === product.id)
+  );
 
   const containerVariants = {
     hidden: { opacity: 1 },
@@ -114,20 +158,23 @@ export function Home() {
   return (
     <div>
       <div className="flex items-center justify-center">
-      <div className="self-baseline">
-        <ProductCard
-          id=""
-          name=""
-          business={[]}
-          regions={[]}
-          deleteProduct={handleDelete}
-          status=""
-          isAddNewProduct
-          isDelete
+        <div className="self-baseline">
+          <ProductCard
+            id=""
+            name=""
+            business={[]}
+            regions={[]}
+            deleteProduct={handleDelete}
+            status=""
+            isAddNewProduct
+            isDelete
+          />
+        </div>
+        <SearchAndSortProduct
+          onProductSort={handleProductSort}
+          placeholder="Search Product"
+          onSearch={handleSearch}
         />
-      </div>
-        <SearchAndSortProduct onProductSort={handleProductSort} placeholder="Search Product"
-              onSearch={handleSearch}/>
         <div className="d-flex m-2 align-items-center">
           Filter By:
           <div
@@ -160,16 +207,18 @@ export function Home() {
           </Button>
         </div>
         <div className="mx-3">
-        {filter === 'non-active' ? (<MultiSelectDropdown
-            options={["rejected", "pending", "deleted"]}
-            placeholder="Filter by Status"
-            onChange={handleStatusFilterChange}
-            value={selectedStatusFilters}
-          />):('')}
+          {filter === "non-active" ? (
+            <MultiSelectDropdown
+              options={["rejected", "pending", "deleted"]}
+              placeholder="Filter by Status"
+              onChange={handleStatusFilterChange}
+              value={selectedStatusFilters}
+            />
+          ) : (
+            ""
+          )}
         </div>
       </div>
-
-      
 
       <motion.div
         className="d-flex flex-wrap justify-content-center"
@@ -177,24 +226,26 @@ export function Home() {
         initial="hidden"
         animate="visible"
       >
-        {sortedAndFilteredProducts.length > 0 ? (
-          sortedAndFilteredProducts.map((product) => (
-            <motion.div
-              key={product.id}
-              style={{ margin: "10px" }}
-              variants={itemVariants}
-            >
-              <ProductCard
-                id={product.id}
-                name={product.name}
-                business={product.business}
-                regions={product.regions}
-                deleteProduct={handleDelete}
-                isDelete
-                status={product.status}
-              />
-            </motion.div>
-          ))
+        {uniqueProducts.length > 0 ? (
+          uniqueProducts.map((product) => {
+            return (
+              <motion.div
+                key={product.id}
+                style={{ margin: "10px" }}
+                variants={itemVariants}
+              >
+                <ProductCard
+                  id={product.id}
+                  name={product.name}
+                  business={product.business}
+                  regions={product.regions}
+                  deleteProduct={handleDelete}
+                  isDelete
+                  status={product.status}
+                />
+              </motion.div>
+            );
+          })
         ) : (
           <div
             className="w-100 d-flex justify-content-center"
@@ -204,6 +255,7 @@ export function Home() {
           </div>
         )}
       </motion.div>
+
       <NotificationContainer />
     </div>
   );
