@@ -19,7 +19,9 @@ export function ProductCard({
 
   const handleDelete = (e: React.MouseEvent) => {
     e.preventDefault();
+    // if (status !== "delete_pending" || status !== "deleted") {
     notifyDeleteProduct({ id, name }, () => deleteProduct(id));
+    // }
   };
 
   const handleEdit = (e: React.MouseEvent) => {
@@ -83,7 +85,9 @@ export function ProductCard({
           </div>
           <div className="flex justify-between gap-2">
             <Edit onClick={handleEdit} />
-            {isDelete && <Trash2 onClick={handleDelete} />}
+            {isDelete && !["deleted", "delete_pending"].includes(status) && (
+              <Trash2 onClick={handleDelete} />
+            )}
           </div>
         </Card.Body>
       </Card>
