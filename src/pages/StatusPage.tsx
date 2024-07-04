@@ -54,7 +54,7 @@ export function StatusPage() {
       setNewProduct({ ...newProduct });
     }
     setStatusData(products);
-  }, [productToEdit, products, newProduct]);
+  }, [productToEdit, products]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -245,7 +245,7 @@ export function StatusPage() {
 
   return (
     <>
-      <div className="px-10">
+      <div className="px-3">
         <ArrowLeft width={50} height={30} onClick={handleArrowClick} className="cursor-pointer border rounded" />
       </div>
       {viewOnly ? (

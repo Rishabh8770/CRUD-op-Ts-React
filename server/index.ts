@@ -110,7 +110,6 @@ app.delete("/products/:id", (req, res) => {
   }
 });
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const updateStatus = (
   id: string,
   status: "active" | "rejected" | "delete_pending" | "deleted",
@@ -134,7 +133,6 @@ const updateStatus = (
       return res.json(deletedItems[deletedProductIndex]);
     }
   } else {
-    // Handle other status transitions as before
     if (productIndex !== -1) {
       items[productIndex].status = status;
       writeData(dataFilePath, items);

@@ -100,10 +100,6 @@ export function Home() {
     return true;
   };
 
-  const handleDelete = (id: string) => {
-    deleteProduct(id);
-  };
-
   const sortedAndFilteredProducts = products
     .filter(applyFilterAndSort)
     .sort((a, b) => {
@@ -156,15 +152,15 @@ export function Home() {
   ];
 
   return (
-    <div>
-      <div className="flex items-center justify-center">
-        <div className="self-baseline">
+    <div className="mx-auto">
+      <div className="flex  flex-col md:flex-row justify-center items-center">
+        <div className="mb-3">
           <ProductCard
             id=""
             name=""
             business={[]}
             regions={[]}
-            deleteProduct={handleDelete}
+            deleteProduct={deleteProduct}
             status=""
             isAddNewProduct
             isDelete
@@ -175,13 +171,13 @@ export function Home() {
           placeholder="Search Product"
           onSearch={handleSearch}
         />
-        <div className="d-flex m-2 align-items-center">
+        <div className="d-flex m-2 items-center">
           Filter By:
           <div
-            className="d-flex border align-items-center mx-2 p-2"
+            className="flex border items-center md:flex-row flex-col mx-2 p-2"
             style={{ borderRadius: "10px", background: "#fff" }}
           >
-            <div className="d-flex align-items-center">
+            <div className="flex items-center my-2 md:my-0">
               <h6 className="mx-2 mb-0">Business:</h6>
               <MultiSelectDropdown
                 options={businessOptions}
@@ -201,56 +197,49 @@ export function Home() {
             </div>
           </div>
         </div>
-        <div>
+        <div className="flex md:flex-row flex-col">
           <Button onClick={toggleFilter}>
             Show {filter === "active" ? "Request List" : "Active Products"}
           </Button>
-        </div>
-        <div className="mx-3">
-          {filter === "non-active" ? (
-            <MultiSelectDropdown
-              options={["rejected", "pending", "deleted"]}
-              placeholder="Filter by Status"
-              onChange={handleStatusFilterChange}
-              value={selectedStatusFilters}
-            />
-          ) : (
-            ""
+          {filter === "non-active" && (
+            <div className="md:mx-2 my-2 md:my-0">
+              <MultiSelectDropdown
+                options={["rejected", "pending", "deleted"]}
+                placeholder="Filter by Status"
+                onChange={handleStatusFilterChange}
+                value={selectedStatusFilters}
+              />
+            </div>
           )}
         </div>
       </div>
 
       <motion.div
-        className="d-flex flex-wrap justify-content-center"
+        className="flex flex-wrap justify-center mt-4"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
       >
         {uniqueProducts.length > 0 ? (
-          uniqueProducts.map((product) => {
-            return (
-              <motion.div
-                key={product.id}
-                style={{ margin: "10px" }}
-                variants={itemVariants}
-              >
-                <ProductCard
-                  id={product.id}
-                  name={product.name}
-                  business={product.business}
-                  regions={product.regions}
-                  deleteProduct={handleDelete}
-                  isDelete
-                  status={product.status}
-                />
-              </motion.div>
-            );
-          })
+          uniqueProducts.map((product) => (
+            <motion.div
+              key={product.id}
+              className="m-2"
+              variants={itemVariants}
+            >
+              <ProductCard
+                id={product.id}
+                name={product.name}
+                business={product.business}
+                regions={product.regions}
+                deleteProduct={deleteProduct}
+                isDelete
+                status={product.status}
+              />
+            </motion.div>
+          ))
         ) : (
-          <div
-            className="w-100 d-flex justify-content-center"
-            style={{ marginTop: "10%" }}
-          >
+          <div className="w-full flex justify-center mt-10">
             <h4>No Card found</h4>
           </div>
         )}
