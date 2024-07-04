@@ -13,8 +13,7 @@ export const SearchAndSortProduct = ({
   placeholder,
   onSearch,
 }: SearchAndSortProductProps) => {
-  const [sortOption, setSortOption] =
-    useState<SortOptions>("--please select--");
+  const [sortOption, setSortOption] = useState<SortOptions>("--please select--");
   const [search, setSearch] = useState("");
 
   const handleProductSort = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -30,7 +29,7 @@ export const SearchAndSortProduct = ({
   };
 
   return (
-    <>
+    <div className="flex md:flex-row flex-col items-center">
       <div>
         <label htmlFor="filter" className="mx-2 h6">
           Sort By:{" "}
@@ -59,6 +58,6 @@ export const SearchAndSortProduct = ({
           className="rounded w-auto p-2 mx-1 border border-gray-300"
         />
       </div>
-    </>
+    </div>
   );
 };

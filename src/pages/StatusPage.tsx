@@ -245,7 +245,7 @@ export function StatusPage() {
 
   return (
     <>
-      <div className="px-10">
+      <div className="px-3">
         <ArrowLeft width={50} height={30} onClick={handleArrowClick} className="cursor-pointer border rounded" />
       </div>
       {viewOnly ? (

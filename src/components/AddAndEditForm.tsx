@@ -81,7 +81,7 @@ function AddAndEditForm({
   }, [products, getUniqueOptions]);
 
   return (
-    <div className="container border rounded my-4">
+    <div className=" border rounded my-4 mx-3 px-2">
       <label className="text-3xl my-3">{title}</label>
       {!editMode && (
         <Form.Group controlId="productName">

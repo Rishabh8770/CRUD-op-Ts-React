@@ -53,7 +53,7 @@ export function ProductCard({
 
   if (isAddNewProduct) {
     return (
-      <div className="overflow-y-hidden drop-shadow-xl flex items-center justify-center mt-3">
+      <div className="flex items-center justify-center mt-3">
         <Button variant="success" onClick={handleAddProductClick}>
           <div>Add New Product</div>
         </Button>
